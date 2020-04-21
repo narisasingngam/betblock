@@ -1,102 +1,90 @@
-pragma solidity >0.4.99;
-contract Betting {
-   address payable public owner;
-   uint256 public minimumBet;
-   uint256 public totalBetsOne;
-   uint256 public totalBetsTwo;
-   address payable[] public players;
-   struct Player {
-      uint256 amountBet;
-      uint16 teamSelected;
-    }
-// The address of the player and => the user info
-   mapping(address => Player) public playerInfo;
-   function() external payable {}
-   
-  constructor() public {
-      owner = msg.sender;
-      minimumBet = 100000000000000;
-    }
-function kill() public {
-      if(msg.sender == owner) selfdestruct(owner);
+pragma solidity >=0.4.22 <0.6.0;
+pragma experimental ABIEncoderV2;
+
+contract Betting{
+    uint256 private minimumBet;
+    uint256 constant private numberOfDice = 3;
+    address payable[] public players;
+    
+    struct Player{
+        uint256 amountBet;
+        bytes32 typeSelected;
+        Dice[] faceSelected;
     }
     
-function checkPlayerExists(address payable player) public view returns(bool){
+    struct Result{
+        Dice[numberOfDice] resultDices;
+    }
+    
+    struct Dice{
+        bytes32 symbol;
+        bytes32 color;
+    }
+    
+    mapping(address => Player) public playerInfo;
+    
+    constructor() public {
+    // 0.0001 ether
+      minimumBet = 100000000000000;
+   }
+   
+   function checkPlayerExists(address player) public view returns(bool){
       for(uint256 i = 0; i < players.length; i++){
          if(players[i] == player) return true;
       }
       return false;
-    }
-function bet(uint8 _teamSelected) public payable {
-      //The first require is used to check if the player already exist
+   }
+   
+   //bet the money
+   function bet(bytes32 _typeSelected, bytes32[] memory symbols, bytes32[] memory colors) public payable{
       require(!checkPlayerExists(msg.sender));
-      //The second one is used to see if the value sended by the player is
-      //Higher than the minimum value
       require(msg.value >= minimumBet);
-//We set the player informations : amount of the bet and selected team
       playerInfo[msg.sender].amountBet = msg.value;
-      playerInfo[msg.sender].teamSelected = _teamSelected;
-//then we add the address of the player to the players array
+      playerInfo[msg.sender].typeSelected = _typeSelected;
+      for(uint256 i = 0; i < 3; i++){
+          playerInfo[msg.sender].faceSelected.push(Dice({
+              symbol: symbols[i],
+              color: colors[i]
+          }));
+      }
       players.push(msg.sender);
-//at the end, we increment the stakes of the team selected with the player bet
-      if ( _teamSelected == 1){
-          totalBetsOne += msg.value;
-      }
-      else{
-          totalBetsTwo += msg.value;
-      }
-    }
-    // Generates a number between 1 and 10 that will be the winner
-    function distributePrizes(uint16 teamWinner) public {
-      address payable[1000] memory winners;
-      //We have to create a temporary in memory array with fixed size
-      //Let's choose 1000
-      uint256 count = 0; // This is the count for the array of winners
-      uint256 LoserBet = 0; //This will take the value of all losers bet
-      uint256 WinnerBet = 0; //This will take the value of all winners bet
-      address add;
-      uint256 bet;
-      address payable playerAddress;
-//We loop through the player array to check who selected the winner team
-      for(uint256 i = 0; i < players.length; i++){
-         playerAddress = players[i];
-//If the player selected the winner team
-         //We add his address to the winners array
-         if(playerInfo[playerAddress].teamSelected == teamWinner){
-            winners[count] = playerAddress;
-            count++;
-         }
-      }
-//We define which bet sum is the Loser one and which one is the winner
-      if ( teamWinner == 1){
-         LoserBet = totalBetsTwo;
-         WinnerBet = totalBetsOne;
-      }
-      else{
-          LoserBet = totalBetsOne;
-          WinnerBet = totalBetsTwo;
-      }
-//We loop through the array of winners, to give ethers to the winners
-      for(uint256 j = 0; j < count; j++){
-          // Check that the address in this fixed array is not empty
-         if(winners[j] != address(0))
-            add = winners[j];
-            bet = playerInfo[add].amountBet;
-            //Transfer the money to the user
-            winners[j].transfer((bet*(10000+(LoserBet*10000/WinnerBet)))/10000);
-      }
-      
-      delete playerInfo[playerAddress]; // Delete all the players
-      players.length = 0; // Delete all the players array
-      LoserBet = 0; //reinitialize the bets
-      WinnerBet = 0;
-      totalBetsOne = 0;
-      totalBetsTwo = 0;
-    }
-function AmountOne() public view returns(uint256){
-       return totalBetsOne;
-    }
-function AmountTwo() public view returns(uint256){
-       return totalBetsTwo;
-    }
+   }
+   
+   //distribute the prizes for each player following the type of bet.
+   function distributePrize(Result memory result) public{
+       address payable playerAddress;
+       uint256 bet = 0;
+       uint256 times = 0;
+
+       for(uint256 i = 0; i < players.length; i++){
+           playerAddress = players[i];
+           if(playerInfo[playerAddress].typeSelected == "singleSymbol")times = singleSymbolWinner(playerAddress,result);
+           
+           bet = playerInfo[playerAddress].amountBet;
+           playerAddress.transfer(bet+(bet*times));
+       }
+
+   }
+
+   /**bet with single symbol selected. 
+    * if match 1 die get 1 time of bet, if 2 dice get 2 time of bet, if 3 dice get 3 time of bet.*/
+   function singleSymbolWinner(address payable playerAddress, Result memory result) public returns (uint256 times){
+        Player memory p = playerInfo[playerAddress];
+        uint256 count = 0;
+
+        for(uint256 i = 0; i < p.faceSelected.length; i++){
+            for(uint256 j = 0; j < p.faceSelected.length; j++){
+                if(p.faceSelected[i].symbol == result.resultDices[j].symbol){
+                    count++;
+                    delete p.faceSelected[i].symbol;
+                    delete result.resultDices[j].symbol;
+                    break;
+                }
+            }
+        }
+        
+        times = count;
+        return times;
+   }
+   
 }
