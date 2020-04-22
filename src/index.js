@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 // import App from './App';
-import Bet from './bet';
 import * as serviceWorker from './serviceWorker';
 import Navbar from './component/Navbar';
 import Routes from './Routes';
@@ -11,7 +10,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 ReactDOM.render(
   <React.StrictMode>
     <Navbar/>
-    <Bet/>
     <Routes/>
   </React.StrictMode>,
   document.getElementById('root')

@@ -3,7 +3,7 @@ import React from 'react';
 import { Row } from 'react-bootstrap';
 import { Image , Button} from 'react-bootstrap';
 // import logo from './logo.svg';
-import './bet.css';
+import './../styles/bet.css';
 
 function Bet() {
   return (
