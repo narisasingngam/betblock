@@ -83,7 +83,7 @@ function bet(uint8 _teamSelected) public payable {
             add = winners[j];
             bet = playerInfo[add].amountBet;
             //Transfer the money to the user
-            winners[j].transfer(    (bet*(10000+(LoserBet*10000/WinnerBet)))/10000 );
+            winners[j].transfer((bet*(10000+(LoserBet*10000/WinnerBet)))/10000);
       }
       
       delete playerInfo[playerAddress]; // Delete all the players
