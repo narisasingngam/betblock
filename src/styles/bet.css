@@ -26,3 +26,19 @@
 .reset-btn{
     margin:50px 0 0 0;
 }
+
+.dropdown {
+    width: 50px;
+    margin: 50px;
+    margin-top: 50px;
+    color:rgb(130, 219, 216);
+}
+
+.word {
+    margin-top: 52px;
+    margin-left: 100px;
+    margin-right: -30px;
+    font-size: 25px;
+    font-family: "Times New Roman", Times, serif;
+    color: rgb(100, 99, 99);
+}

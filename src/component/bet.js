@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { Row } from 'react-bootstrap';
-import { Image , Button} from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
+import { Button, Dropdown, DropdownButton} from 'react-bootstrap';
 import RollingItem from 'react-rolling-item';
 import './../styles/bet.css';
 import img from '../pic/bg-fruit.png'
+
 
 
 
@@ -16,9 +17,19 @@ export class Bet extends Component {
       start: false,
       reset: false,
       disable: false,
+      bettype: "Colour",
+      betnum: "1"
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
+  }
+
+  changeType(text) {
+    this.setState({bettype: text})
+  }
+
+  changeValue(text) {
+    this.setState({betnum: text})
   }
 
   onClick(e) {
@@ -49,7 +60,7 @@ export class Bet extends Component {
             column={3}
             backgroundImage={img}
             backgroundSize="600px 564px"
-            introItemInfo={{x: -39, y: -28}}
+            introItemInfo={{x: -437, y: -406}}
             itemInfo={
               [
                 { x: -39, y: -217, id: 'item_1', probability: 0 },
@@ -57,9 +68,10 @@ export class Bet extends Component {
                 { x: -241, y: -28, id: 'item_3', probability: 0 },
                 { x: -241, y: -217, id: 'item_4', probability: 0 },
                 { x: -241, y: -406, id: 'item_5', probability: 0 },
-                { x: -437, y: -28, id: 'item_6', probability: 0 },
-                { x: -437, y: -217, id: 'item_7', probability: 0 },
-               { x: -437, y: -406, id: 'item_8', probability: 0 },
+                { x: -39, y: -28, id: 'item_1', probability: 0 },
+                // { x: -437, y: -28, id: 'item_6', probability: 0 },
+              //   { x: -437, y: -217, id: 'item_7', probability: 0 },
+              //  { x: -437, y: -406, id: 'item_8', probability: 0 },
              ]
             }
             width={177}
@@ -72,9 +84,32 @@ export class Bet extends Component {
           />
           </div>
         <Button variant="outline-primary" className="start-roll" onClick={this.onClick} disabled={this.state.disable}>
-          {!this.state.start ? 'START' : 'STOP'}
+            ROLL
         </Button>
         <Button variant="outline-primary" className="reset-btn" onClick={this.onClickReset}>RESET</Button>
+        <Row>
+          <div className="word">Bet type:</div>
+          <DropdownButton className="dropdown" id={"dropdown-bet"} variant="info" size="lg" title={this.state.bettype}>
+            <Dropdown.Item>
+             <div onClick={(e) => this.changeType(e.target.textContent)}>Colour</div>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <div onClick={(e) => this.changeType(e.target.textContent)}>Figure</div>
+            </Dropdown.Item>
+          </DropdownButton>
+          <div className="word">Bet number:</div>
+          <DropdownButton className="dropdown" id={"dropdown-number"} variant="outline-secondary" size="lg" title={this.state.betnum}>
+            <Dropdown.Item>
+             <div onClick={(e) => this.changeValue(e.target.textContent)}>1</div>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <div onClick={(e) => this.changeValue(e.target.textContent)}>2</div>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <div onClick={(e) => this.changeValue(e.target.textContent)}>3</div>
+            </Dropdown.Item>
+          </DropdownButton>
+        </Row>
       </div>
     )
   }
