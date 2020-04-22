@@ -17,11 +17,12 @@
 
 .roll {
     margin-left: 32%;
+    margin-top: 50px;
 }
 
 .start-roll{
-    margin:10% 30px 0 42%;
+    margin:50px 30px 0 42%;
 }
 .reset-btn{
-    margin:10% 0 0 0;
+    margin:50px 0 0 0;
 }

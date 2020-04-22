@@ -15,6 +15,7 @@ export class Bet extends Component {
       username: this.props.location.state.name, 
       start: false,
       reset: false,
+      disable: false,
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -24,6 +25,7 @@ export class Bet extends Component {
     this.setState({ start: !this.state.start }, () => {
       setTimeout(() => {
         this.setState({ start: !this.state.start });
+        this.setState({ disable: !this.state.disable });
       }, 1500);
     });
   }
@@ -31,6 +33,7 @@ export class Bet extends Component {
   onClickReset(e) {
     this.setState({ reset: true }, () => {
       this.setState({ reset: false });
+      this.setState({ disable: !this.state.disable });
     });
   }
 
@@ -68,7 +71,7 @@ export class Bet extends Component {
             onProgress={(isProgress, result) => { console.log(result); }}
           />
           </div>
-        <Button variant="outline-primary" className="start-roll" onClick={this.onClick}>
+        <Button variant="outline-primary" className="start-roll" onClick={this.onClick} disabled={this.state.disable}>
           {!this.state.start ? 'START' : 'STOP'}
         </Button>
         <Button variant="outline-primary" className="reset-btn" onClick={this.onClickReset}>RESET</Button>
