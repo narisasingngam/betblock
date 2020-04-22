@@ -68,7 +68,7 @@ export class Bet extends Component {
             onProgress={(isProgress, result) => { console.log(result); }}
           />
           </div>
-        <Button variant="outline-primary" className="start-" onClick={this.onClick}>
+        <Button variant="outline-primary" className="start-roll" onClick={this.onClick}>
           {!this.state.start ? 'START' : 'STOP'}
         </Button>
         <Button variant="outline-primary" className="reset-btn" onClick={this.onClickReset}>RESET</Button>
