@@ -1,14 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+// import App from './App';
+import Bet from './bet';
 import * as serviceWorker from './serviceWorker';
 import Navbar from './component/Navbar';
 
 ReactDOM.render(
   <React.StrictMode>
     <Navbar/>
-    <App />
+    <Bet/>
   </React.StrictMode>,
   document.getElementById('root')
 );
