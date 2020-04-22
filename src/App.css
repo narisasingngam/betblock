@@ -36,3 +36,44 @@
     transform: rotate(360deg);
   }
 }
+
+.modal-content{
+  margin: auto;
+  width: 20%;
+  height: 10%;
+  padding: 10px;
+}
+
+.start-btn{
+  margin-left: 49%;
+}
+
+.card-ad{
+  margin-left: 32%;
+  margin-bottom: 15px;
+  width: fit-content;
+}
+
+.signin-btn{
+  margin: 5% 0 0 42%;
+}
+
+/* .app {
+  margin: auto;
+  width: 20%;
+  height: 10%;
+  padding: 10px;
+} */
+
+/* .modal-header{
+  display: none;
+}
+
+.modal-body{
+
+}
+
+.modal-footer{
+
+} */
+
