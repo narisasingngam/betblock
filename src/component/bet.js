@@ -4,7 +4,6 @@ import { Image , Button} from 'react-bootstrap';
 import RollingItem from 'react-rolling-item';
 import './../styles/bet.css';
 import img from '../pic/bg-fruit.png'
-import corgi from '../pic/eiei.jpg'
 
 
 
@@ -41,13 +40,8 @@ export class Bet extends Component {
         <div>
            Hello {this.state.username}
         </div>
-        <Row>
-            <Image className="pic" src="https://i.pinimg.com/originals/04/98/65/0498659455374a06c7db95f3a55222bd.jpg"  rounded/>
-            <Image className="pic" src="https://i.pinimg.com/originals/04/98/65/0498659455374a06c7db95f3a55222bd.jpg"  rounded/>
-            <Image className="pic" src="https://i.pinimg.com/originals/04/98/65/0498659455374a06c7db95f3a55222bd.jpg"  rounded/>
-        </Row>
-        <Button className="button" variant="info">roll</Button>{' '}
-          <RollingItem className="roll"
+          <div className="roll">
+          <RollingItem
             on={this.state.start}
             column={3}
             backgroundImage={img}
@@ -73,10 +67,11 @@ export class Bet extends Component {
             completionAnimation={true}
             onProgress={(isProgress, result) => { console.log(result); }}
           />
-        <button className="button" onClick={this.onClick}>
+          </div>
+        <Button variant="outline-primary" className="start-" onClick={this.onClick}>
           {!this.state.start ? 'START' : 'STOP'}
-        </button>
-        <button className="button" onClick={this.onClickReset}>RESET</button>
+        </Button>
+        <Button variant="outline-primary" className="reset-btn" onClick={this.onClickReset}>RESET</Button>
       </div>
     )
   }
