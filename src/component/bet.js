@@ -2,6 +2,7 @@ import { Row } from 'react-bootstrap';
 import { Image , Button} from 'react-bootstrap';
 // import logo from './logo.svg';
 import './../styles/bet.css';
+import Cookies from 'universal-cookie';
 
 import React, { Component } from 'react'
 
@@ -9,15 +10,16 @@ export class Bet extends Component {
 
   constructor(props){
     super(props)
+    const cookies = new Cookies();
     this.state = {
-      username: this.props.location.state.name
+      username: cookies.get('username')
     }
   }
 
   render() {
     return (
       <div>
-        <div>
+        <div className="username">
            Hello {this.state.username}
         </div>
         <Row>
