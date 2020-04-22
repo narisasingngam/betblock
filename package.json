@@ -10,6 +10,7 @@
     "ethereumjs-wallet": "^0.6.3",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.0",
+    "react-cookie": "^4.0.3",
     "react-dom": "^16.13.1",
     "react-metamask-login-button": "^1.0.18",
     "react-router-dom": "^5.1.2",

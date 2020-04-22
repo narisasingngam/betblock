@@ -54,8 +54,14 @@
   width: fit-content;
 }
 
+.card-input{
+  margin: 0 25% 0 32%;
+  margin-bottom: 15px;
+  
+}
+
 .signin-btn{
-  margin: 5% 0 0 42%;
+  margin: 5% 0 0 40%;
 }
 
 /* .app {
