@@ -16,7 +16,7 @@
 }
 
 .roll {
-    margin-left: 32%;
+    flex: 2;
     margin-top: 50px;
 }
 
@@ -41,4 +41,17 @@
     font-size: 25px;
     font-family: "Times New Roman", Times, serif;
     color: rgb(100, 99, 99);
+}
+
+.card-bet{
+    display: flex;
+}
+
+.card-detail{
+    flex: 1;
+    margin: 10px 0 0 10px;
+}
+
+.row-bet{
+    margin-top: 20px;
 }

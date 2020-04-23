@@ -51,7 +51,7 @@ export default class App extends React.Component {
                 value={this.state.name}
               />
             </InputGroup></Card>
-          <Button variant="success" className="start-btn" onClick={() => this.props.history.push({pathname:"/home", state:{name:this.state.name}})}>Start</Button>
+          <Button variant="success" className="start-btn" onClick={() => this.props.history.push({pathname:"/home", state:{name:this.state.name,account:this.state.account}})}>Start</Button>
         </div>
       } else {
         return <p></p>

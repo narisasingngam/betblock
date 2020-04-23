@@ -1,8 +1,9 @@
 import { Router, Switch, Route } from "react-router-dom";
 import React, { Component } from 'react'
 import App from "./App";
-import Bet from "./component/bet"
+import Home from "./component/Home"
 import history from "./history";
+import Bet from "./component/bet";
 
 export default class Routes extends Component {
     render() {
