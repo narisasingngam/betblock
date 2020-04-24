@@ -1,11 +1,12 @@
 import Cookies from 'universal-cookie';
-import React, { Component} from 'react'
+import React, { Component } from 'react'
 import { Row } from 'react-bootstrap';
 import { Button, Dropdown, DropdownButton, Card, Modal } from 'react-bootstrap';
 import RollingItem from 'react-rolling-item';
 import './../styles/bet.css';
 import img from '../pic/bg-fruit.png'
 import Web3 from 'web3'
+import DropdownBtn from './../component/DropdownBtn'
 
 export class Bet extends Component {
 
@@ -22,13 +23,18 @@ export class Bet extends Component {
       bettype: "Colour",
       betnum: "1",
       show: false,
-      betItem: "Apple",
+      betItem1: "Apple",
+      betItem2: "Apple",
+      betItem3: "Apple"
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
     this.handleClose = this.handleClose.bind(this)
     this.handleShow = this.handleShow.bind(this)
     this.loadBlockChain = this.loadBlockChain.bind(this)
+    this.getItem1 = this.getItem1.bind(this)
+    this.getItem2 = this.getItem2.bind(this)
+    this.getItem3 = this.getItem3.bind(this)
   }
 
   async loadBlockChain() {
@@ -57,6 +63,18 @@ export class Bet extends Component {
     this.setState({ betnum: text })
   }
 
+  getItem1(val) {
+    this.setState({ betItem1: val })
+  }
+
+  getItem2(val) {
+    this.setState({ betItem2: val })
+  }
+
+  getItem3(val) {
+    this.setState({ betItem3: val })
+  }
+
   onClick(e) {
     this.setState({ start: !this.state.start }, () => {
       setTimeout(() => {
@@ -73,17 +91,17 @@ export class Bet extends Component {
     });
   }
 
-  handleShow(){
-    this.setState({show: true})
+  handleShow() {
+    this.setState({ show: true })
   }
 
-  handleClose(){
-    this.setState({show: false})
+  handleClose() {
+    this.setState({ show: false })
   }
 
   render() {
 
-    const  item = ["Apple","Broccoli","Carrot","Tomato","Cucumber","Pie apple"];
+    const item = ["Apple", "Broccoli", "Carrot", "Tomato", "Cucumber", "Pie apple"];
 
     return (
       <div>
@@ -171,13 +189,9 @@ export class Bet extends Component {
               <div onClick={(e) => this.changeValue(e.target.textContent)}>3</div>
             </Dropdown.Item>
           </DropdownButton>
-          <DropdownButton className="dropdown" id={"dropdown-number"} variant="outline-secondary" size="lg" title={this.state.betItem}>
-            { item.map(function(object, i){
-               return <Dropdown.Item>
-               <div onClick={(e) => this.changeValue(e.target.textContent)}>{object}</div>
-             </Dropdown.Item>;
-               })}
-          </DropdownButton>
+          <DropdownBtn item={item} title={this.state.betItem1} sendData={this.getItem1} />
+          <DropdownBtn item={item} title={this.state.betItem2} sendData={this.getItem2} />
+          <DropdownBtn item={item} title={this.state.betItem3} sendData={this.getItem3} />
         </Row>
       </div>
     )
