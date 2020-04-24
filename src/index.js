@@ -6,11 +6,15 @@ import * as serviceWorker from './serviceWorker';
 import Navbar from './component/Navbar';
 import Routes from './Routes';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { CookiesProvider } from 'react-cookie';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Navbar/>
-    <Routes/>
+    <CookiesProvider>
+      <Navbar />
+      <Routes />
+
+    </CookiesProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

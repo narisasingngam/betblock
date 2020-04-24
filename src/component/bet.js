@@ -1,3 +1,4 @@
+import Cookies from 'universal-cookie';
 import React, { Component,useState } from 'react'
 import ReactDOM from 'react-dom'
 import { Row, Col } from 'react-bootstrap';
@@ -11,7 +12,7 @@ export class Bet extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      username: this.props.location.state.name,
+      username: cookies.get('username'),
       start: false,
       reset: false,
       disable: false,

@@ -4,6 +4,8 @@ import MetaMaskLoginButton from 'react-metamask-login-button';
 import Web3 from 'web3'
 import history from "./history";
 import { Button, Card, InputGroup, FormControl } from 'react-bootstrap';
+import Cookies from 'universal-cookie';
+
 
 export default class App extends React.Component {
 
@@ -36,6 +38,9 @@ export default class App extends React.Component {
     this.loadBlockChain()
   }
   render() {
+    const cookies = new Cookies();
+    cookies.set('username', this.state.name , { path: '/' });
+    console.log(cookies.get('username'));
 
     const renderAuthButton = () => {
       if (this.state.account !== undefined) {
@@ -51,7 +56,7 @@ export default class App extends React.Component {
                 value={this.state.name}
               />
             </InputGroup></Card>
-          <Button variant="success" className="start-btn" onClick={() => this.props.history.push({pathname:"/home", state:{name:this.state.name,account:this.state.account}})}>Start</Button>
+          <Button variant="success" className="start-btn" onClick={() => history.push('/home')}>Start</Button>
         </div>
       } else {
         return <p></p>
