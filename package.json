@@ -19,6 +19,7 @@
     "solc": "^0.6.6",
     "truffle-contract": "^4.0.31",
     "truffle-wallet-provider": "0.0.5",
+    "universal-cookie": "^4.0.3",
     "web3": "^1.2.6"
   },
   "scripts": {

@@ -1,7 +1,6 @@
 import { Router, Switch, Route } from "react-router-dom";
 import React, { Component } from 'react'
 import App from "./App";
-import Home from "./component/Home"
 import history from "./history";
 import Bet from "./component/bet";
 

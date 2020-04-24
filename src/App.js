@@ -11,12 +11,13 @@ export default class App extends React.Component {
 
   constructor(props){
     super(props)
-    this.state = 
-                {
-                  account: '',
-                  name: ''
-                }
-   this.handleChange = this.handleChange.bind(this);
+    this.state =
+    {
+      account: '',
+      name: '',
+      balance: ''
+    }
+    this.handleChange = this.handleChange.bind(this);
 
   }
   
@@ -27,7 +28,6 @@ export default class App extends React.Component {
     console.log(network) // should give you main if you're connected to the main network via metamask...
     const accounts = await web3.eth.getAccounts()
     this.setState({ account: accounts[0] })
-
   }
 
   handleChange(event){
@@ -39,7 +39,8 @@ export default class App extends React.Component {
   }
   render() {
     const cookies = new Cookies();
-    cookies.set('username', this.state.name , { path: '/' });
+    cookies.set('username', this.state.name, { path: '/' });
+    cookies.set('address', this.state.account, { path: '/' })
     console.log(cookies.get('username'));
 
     const renderAuthButton = () => {

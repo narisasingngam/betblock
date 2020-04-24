@@ -13,7 +13,6 @@ ReactDOM.render(
     <CookiesProvider>
       <Navbar />
       <Routes />
-
     </CookiesProvider>
   </React.StrictMode>,
   document.getElementById('root')

@@ -1,18 +1,21 @@
 import Cookies from 'universal-cookie';
-import React, { Component,useState } from 'react'
-import ReactDOM from 'react-dom'
-import { Row, Col } from 'react-bootstrap';
+import React, { Component} from 'react'
+import { Row } from 'react-bootstrap';
 import { Button, Dropdown, DropdownButton, Card, Modal } from 'react-bootstrap';
 import RollingItem from 'react-rolling-item';
 import './../styles/bet.css';
 import img from '../pic/bg-fruit.png'
+import Web3 from 'web3'
 
 export class Bet extends Component {
 
   constructor(props) {
     super(props)
+    const cookies = new Cookies();
     this.state = {
       username: cookies.get('username'),
+      address: cookies.get('address'),
+      balance: '',
       start: false,
       reset: false,
       disable: false,
@@ -25,6 +28,25 @@ export class Bet extends Component {
     this.onClickReset = this.onClickReset.bind(this)
     this.handleClose = this.handleClose.bind(this)
     this.handleShow = this.handleShow.bind(this)
+    this.loadBlockChain = this.loadBlockChain.bind(this)
+  }
+
+  async loadBlockChain() {
+    const web3 = new Web3(Web3.givenProvider || 'http://localhost:8080')
+    const network = await web3.eth.net.getNetworkType();
+    console.log(network) // should give you main if you're connected to the main network via metamask...
+
+    await web3.eth.getBalance(this.state.address, function (error, wei) {
+      if (!error) {
+        const balance = web3.utils.fromWei(wei, 'ether');
+        console.log(balance + " ETH");
+        this.setState({ balance: balance })
+      }
+    }.bind(this));
+  }
+
+  componentDidMount() {
+    this.loadBlockChain()
   }
 
   changeType(text) {
@@ -63,13 +85,12 @@ export class Bet extends Component {
 
     const  item = ["Apple","Broccoli","Carrot","Tomato","Cucumber","Pie apple"];
 
-
     return (
       <div>
         <div className="card-bet">
           <div className="card-detail">
-            <Card border="light" style={{ width: '25rem' }}>
-              <Card.Header>Balance wallet: 50000</Card.Header>
+            <Card border="light" style={{ width: '25rem', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', transition: '0.3s' }}>
+              <Card.Header>Balance wallet: {this.state.balance} ETH</Card.Header>
               <Card.Body>
                 <Card.Title>Hello {this.state.username}</Card.Title>
                 Bet: <input></input>
