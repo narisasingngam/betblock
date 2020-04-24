@@ -200,7 +200,7 @@ export class Bet extends Component {
                 <DropdownChoice item={list_item} title={this.state.betItem2} sendData={this.getItem2} />
               </div>;
             } else {
-              return <div>
+              return <div style={{ display: 'flex' }} >
                 <DropdownChoice item={list_item} title={this.state.betItem1} sendData={this.getItem1} />
                 <DropdownChoice item={list_item} title={this.state.betItem2} sendData={this.getItem2} />
                 <DropdownChoice item={list_item} title={this.state.betItem3} sendData={this.getItem3} />
