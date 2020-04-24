@@ -1,12 +1,11 @@
 import Cookies from 'universal-cookie';
 import React, { Component } from 'react'
-import { Row, Col } from 'react-bootstrap';
-import { Button, Dropdown, DropdownButton, Card, Modal } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
+import { Button,Card, Modal } from 'react-bootstrap';
 import RollingItem from 'react-rolling-item';
 import './../styles/bet.css';
 import img from '../pic/bg-fruit.png'
 import Web3 from 'web3'
-import DropdownBtn from './../component/DropdownBtn'
 import DropdownChoice from './../component/DropdownChoice'
 
 export class Bet extends Component {
@@ -181,10 +180,10 @@ export class Bet extends Component {
         <Button variant="outline-info" className="reset-btn" onClick={this.onClickReset}>RESET</Button>
         <Row className="row-bet">
           <div className="word">Bet type:</div>
-          <DropdownBtn item={btype} title={this.state.bettype} sendData={this.changeType} />
+          <DropdownChoice item={btype} theme={"info"} title={this.state.bettype} sendData={this.changeType} />
 
           <div className="word">Bet number:</div>
-          <DropdownBtn item={bnumber} title={this.state.betnum} sendData={this.changeValue} />
+          <DropdownChoice item={bnumber} theme={"info"} title={this.state.betnum} sendData={this.changeValue} />
           
           {(()=> {
             const num = this.state.betnum
@@ -192,22 +191,21 @@ export class Bet extends Component {
 
             if (num === '1') {
               return <div>
-                <DropdownChoice item={list_item} title={this.state.betItem1} sendData={this.getItem1} />
+                <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem1} sendData={this.getItem1} />
               </div>;
             } else if (num === '2') {
-              return <div>
-                <DropdownChoice item={list_item} title={this.state.betItem1} sendData={this.getItem1} />
-                <DropdownChoice item={list_item} title={this.state.betItem2} sendData={this.getItem2} />
+              return <div style={{ display: 'flex' }} >
+                <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem1} sendData={this.getItem1} />
+                <DropdownChoice item={list_item} theme={"outline-secondary"}title={this.state.betItem2} sendData={this.getItem2} />
               </div>;
             } else {
               return <div style={{ display: 'flex' }} >
-                <DropdownChoice item={list_item} title={this.state.betItem1} sendData={this.getItem1} />
-                <DropdownChoice item={list_item} title={this.state.betItem2} sendData={this.getItem2} />
-                <DropdownChoice item={list_item} title={this.state.betItem3} sendData={this.getItem3} />
+                <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem1} sendData={this.getItem1} />
+                <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem2} sendData={this.getItem2} />
+                <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem3} sendData={this.getItem3} />
               </div>;
             }
           })()}
-
         </Row>
       </div>
     )

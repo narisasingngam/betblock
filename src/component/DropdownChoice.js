@@ -11,7 +11,7 @@ export class DropdownChoice extends Component {
     
     render() {
         return (
-                <DropdownButton className="dropdown" id={"dropdown-number"} variant="outline-secondary" size="lg" title={this.props.title}>
+                <DropdownButton className="dropdown" id={"dropdown-number"} variant={this.props.theme} size="lg" title={this.props.title}>
                     {this.props.item.map((object, i) => {
                         return (<Dropdown.Item >
                             <div onClick={(e) => this.changeItem(e.target.textContent)}>{object}</div>
