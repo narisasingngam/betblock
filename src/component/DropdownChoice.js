@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { DropdownButton, Dropdown} from 'react-bootstrap'
 
-export class DropdownBtn extends Component {
+export class DropdownChoice extends Component {
 
 
     changeItem(object) {
@@ -11,7 +11,7 @@ export class DropdownBtn extends Component {
     
     render() {
         return (
-                <DropdownButton className="dropdown" id={"dropdown-number"} variant="info" size="lg" title={this.props.title}>
+                <DropdownButton className="dropdown" id={"dropdown-number"} variant="outline-secondary" size="lg" title={this.props.title}>
                     {this.props.item.map((object, i) => {
                         return (<Dropdown.Item >
                             <div onClick={(e) => this.changeItem(e.target.textContent)}>{object}</div>
@@ -23,4 +23,4 @@ export class DropdownBtn extends Component {
     }
 }
 
-export default DropdownBtn
+export default DropdownChoice
