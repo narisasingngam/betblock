@@ -1,102 +1,256 @@
-pragma solidity >0.4.99;
-contract Betting {
-   address payable public owner;
-   uint256 public minimumBet;
-   uint256 public totalBetsOne;
-   uint256 public totalBetsTwo;
-   address payable[] public players;
-   struct Player {
-      uint256 amountBet;
-      uint16 teamSelected;
+pragma solidity >0.4.99 <0.6.0;
+
+contract Betting{
+    address payable public owner;
+    uint256 private minBet;
+    uint256 private maxBet;
+    uint8 constant private numberOfDice = 3;
+    uint8 private numberOfFace = 6;
+    uint256 private randomFactor;
+
+    enum Symbol {Apple, Tomato, Brocoli, Cucumber, Carrot, Pineapple}
+    enum Color {Red, Green, Orange}
+    
+    struct Player{
+        uint256 amountBet;
+        uint8 typeSelected;
+        DiceFace[] faceSelected;
+        bool isBetSet;
     }
-// The address of the player and => the user info
-   mapping(address => Player) public playerInfo;
-   function() external payable {}
-   
-  constructor() public {
+    
+    struct DiceFace{
+        Symbol symbol;
+        Color color;
+    }
+    
+    DiceFace[numberOfDice] resultDices;
+    mapping(address => Player) public playerInfo;
+    function() external payable {}
+    
+    constructor() public{
       owner = msg.sender;
-      minimumBet = 100000000000000;
-    }
-function kill() public {
+    // min is 0.0001 ether and max is 0.01 ether
+      minBet = 100000000000000;
+      maxBet = 10000000000000000;
+      randomFactor = 0;
+   }
+   
+   event Sent(address from, address to, uint amount );
+   
+   function kill() public {
       if(msg.sender == owner) selfdestruct(owner);
     }
     
-function checkPlayerExists(address payable player) public view returns(bool){
-      for(uint256 i = 0; i < players.length; i++){
-         if(players[i] == player) return true;
-      }
-      return false;
-    }
-function bet(uint8 _teamSelected) public payable {
-      //The first require is used to check if the player already exist
-      require(!checkPlayerExists(msg.sender));
-      //The second one is used to see if the value sended by the player is
-      //Higher than the minimum value
-      require(msg.value >= minimumBet);
-//We set the player informations : amount of the bet and selected team
+   //bet the money
+   function bet(uint8 _typeSelected, Symbol[] memory _symbols, Color[] memory _colors) public payable{
+      require(playerInfo[msg.sender].isBetSet == false, "You already bet.");
       playerInfo[msg.sender].amountBet = msg.value;
-      playerInfo[msg.sender].teamSelected = _teamSelected;
-//then we add the address of the player to the players array
-      players.push(msg.sender);
-//at the end, we increment the stakes of the team selected with the player bet
-      if ( _teamSelected == 1){
-          totalBetsOne += msg.value;
+      playerInfo[msg.sender].typeSelected = _typeSelected;
+      playerInfo[msg.sender].isBetSet = true;
+      randomFactor += playerInfo[msg.sender].amountBet;
+      for(uint8 i = 0; i < _symbols.length; i++){
+          playerInfo[msg.sender].faceSelected.push(DiceFace({
+              symbol: _symbols[i],
+              color: _colors[i]
+          }));
       }
-      else{
-          totalBetsTwo += msg.value;
-      }
+   }
+   
+   function setResult(uint256 diceNo, Symbol _symbol, Color _color) public{
+       resultDices[diceNo].symbol = _symbol;
+       resultDices[diceNo].color = _color;
+   }
+   
+   //distribute the prizes for each player following the type of bet.
+   function distributePrize() public{
+       address payable player = msg.sender;
+       uint256 bet = playerInfo[player].amountBet;
+       uint256 times = 0;
+
+           if(playerInfo[player].typeSelected == 1)times = singleDiceSymbolWinner(player);
+           else if(playerInfo[player].typeSelected == 2)times = pairDiceSymbolWinner(player);
+           else if(playerInfo[player].typeSelected == 3)times = tripleDiceSymbolWinner(player);
+           else if(playerInfo[player].typeSelected == 4)times = singleDiceColorWinner(player);
+           else if(playerInfo[player].typeSelected == 5)times = pairDiceColorWinner(player);
+           else if(playerInfo[player].typeSelected == 6)times = tripleDiceColorWinner(player);
+           else if(playerInfo[player].typeSelected == 7)times = tripleColorWinner(player);
+
+           if(times != 0){
+                player.transfer(bet+(bet*times));
+                emit Sent(owner, player, bet+(bet*times));
+           }else{
+                owner.transfer(bet);
+                emit Sent(player, owner, bet);
+           }
     }
-    // Generates a number between 1 and 10 that will be the winner
-    function distributePrizes(uint16 teamWinner) public {
-      address payable[1000] memory winners;
-      //We have to create a temporary in memory array with fixed size
-      //Let's choose 1000
-      uint256 count = 0; // This is the count for the array of winners
-      uint256 LoserBet = 0; //This will take the value of all losers bet
-      uint256 WinnerBet = 0; //This will take the value of all winners bet
-      address add;
-      uint256 bet;
-      address payable playerAddress;
-//We loop through the player array to check who selected the winner team
-      for(uint256 i = 0; i < players.length; i++){
-         playerAddress = players[i];
-//If the player selected the winner team
-         //We add his address to the winners array
-         if(playerInfo[playerAddress].teamSelected == teamWinner){
-            winners[count] = playerAddress;
-            count++;
-         }
-      }
-//We define which bet sum is the Loser one and which one is the winner
-      if ( teamWinner == 1){
-         LoserBet = totalBetsTwo;
-         WinnerBet = totalBetsOne;
-      }
-      else{
-          LoserBet = totalBetsOne;
-          WinnerBet = totalBetsTwo;
-      }
-//We loop through the array of winners, to give ethers to the winners
-      for(uint256 j = 0; j < count; j++){
-          // Check that the address in this fixed array is not empty
-         if(winners[j] != address(0))
-            add = winners[j];
-            bet = playerInfo[add].amountBet;
-            //Transfer the money to the user
-            winners[j].transfer((bet*(10000+(LoserBet*10000/WinnerBet)))/10000);
-      }
-      
-      delete playerInfo[playerAddress]; // Delete all the players
-      players.length = 0; // Delete all the players array
-      LoserBet = 0; //reinitialize the bets
-      WinnerBet = 0;
-      totalBetsOne = 0;
-      totalBetsTwo = 0;
+   
+    // function random() public view returns (uint8) {
+    //     uint256 blockValue = uint256(blockhash(block.number-1 + block.timestamp));
+    //     blockValue = blockValue + uint256(randomFactor);
+    //     return uint8(blockValue % 5) + 1;
+    // }
+ 
+    function getDiceSymbol(uint idx) public view returns (Symbol){
+        return resultDices[idx].symbol;
     }
-function AmountOne() public view returns(uint256){
-       return totalBetsOne;
+    
+    function getDiceColor(uint idx) public view returns (Color){
+        return resultDices[idx].color;
     }
-function AmountTwo() public view returns(uint256){
-       return totalBetsTwo;
-    }
+   
+   
+   /**bet with single symbol selected. 
+    * if match 1 die get 1 time of bet, if 2 dice get 2 time of bet, if 3 dice get 3 time of bet.*/
+   function singleDiceSymbolWinner(address payable playerAddress) public returns (uint256 times){
+        Player memory p = playerInfo[playerAddress];
+        uint256 count = 0;
+
+        for(uint256 i = 0; i < p.faceSelected.length; i++){
+            for(uint256 j = 0; j < resultDices.length; j++){
+                if(p.faceSelected[i].symbol == resultDices[j].symbol){
+                    count++;
+                }
+            }
+        }
+        
+        times = count;
+        return times;
+   }
+   
+   function pairDiceSymbolWinner(address payable playerAddress) public returns (uint256 times){
+       Player memory p = playerInfo[playerAddress];
+       uint256 count = 0;
+       
+       for(uint256 i = 0; i < p.faceSelected.length; i++){
+           for(uint256 j = 0; j < resultDices.length; j++){
+               if(p.faceSelected[i].symbol == resultDices[j].symbol){
+                   count++;
+                   delete p.faceSelected[i];
+                   delete p.faceSelected[j];
+                   break;
+               }
+           }
+       }
+       
+       if(count == 2){
+           times = 5;
+       }else{
+           times = 0;
+       }
+       return times;
+   }
+   
+   function tripleDiceSymbolWinner(address payable playerAddress) public returns (uint256 times){
+       Player memory p = playerInfo[playerAddress];
+       uint256 count = 0;
+       
+       for(uint256 i = 0; i < p.faceSelected.length; i++){
+           for(uint256 j = 0; j < resultDices.length; j++){
+               if(p.faceSelected[i].symbol == resultDices[j].symbol){
+                   count++;
+                   delete p.faceSelected[i];
+                   delete p.faceSelected[j];
+                   break;
+               }
+           }
+       }
+       
+       if(count == 3){
+           times = count;
+       }else{
+           times = 0;
+       }
+       return times;
+   }
+   
+   function singleDiceColorWinner(address payable playerAddress) public returns (uint256 times){
+        Player memory p = playerInfo[playerAddress];
+        uint256 count = 0;
+
+        for(uint256 i = 0; i < p.faceSelected.length; i++){
+            for(uint256 j = 0; j < resultDices.length; j++){
+                if(p.faceSelected[i].color == resultDices[j].color){
+                    if(count == 1)continue;
+                    count++;
+                    delete p.faceSelected[i];
+                    delete resultDices[j];
+                    break;
+                }
+            }
+        }
+        
+        times = count;
+        return times;
+   }
+   
+   function pairDiceColorWinner(address payable playerAddress) public returns (uint256 times){
+        Player memory p = playerInfo[playerAddress];
+        uint256 count = 0;
+
+        for(uint256 i = 0; i < p.faceSelected.length; i++){
+            for(uint256 j = 0; j < resultDices.length; j++){
+                if(p.faceSelected[i].color == resultDices[j].color){
+                    count++;
+                    delete p.faceSelected[i];
+                    delete resultDices[j];
+                    break;
+                }
+            }
+        }
+        
+        if(count == 2){
+            times = 3;
+        }else{
+            times = 0;
+        }
+        return times;
+   }
+   
+   function tripleDiceColorWinner(address payable playerAddress) public returns (uint256 times){
+        Player memory p = playerInfo[playerAddress];
+        uint256 count = 0;
+
+        for(uint256 i = 0; i < p.faceSelected.length; i++){
+            for(uint256 j = 0; j < resultDices.length; j++){
+                if(p.faceSelected[i].color == resultDices[j].color){
+                    count++;
+                    delete p.faceSelected[i];
+                    delete resultDices[j];
+                    break;
+                }
+            }
+        }
+        
+        if(count == 3){
+            times = 7;
+        }else{
+            times = 0;
+        }
+        return times;
+   }
+   
+   function tripleColorWinner(address payable playerAddress) public returns (uint256 times){
+        Player memory p = playerInfo[playerAddress];
+        uint256 count = 0;
+
+        for(uint256 i = 0; i < p.faceSelected.length; i++){
+            for(uint256 j = 0; j < resultDices.length; j++){
+                if(p.faceSelected[i].color == resultDices[j].color && p.faceSelected[i].symbol == resultDices[j].symbol){
+                    count++;
+                    delete p.faceSelected[i];
+                    delete resultDices[j];
+                    break;
+                }
+            }
+        }
+        
+        if(count == 3){
+            times = 20;
+        }else{
+            times = 0;
+        }
+        return times;
+   }
 }
+
+
