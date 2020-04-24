@@ -5,7 +5,9 @@
 
 .head{
     font-family: "Times New Roman", Times, serif;
+    font-size: 35px;
     text-align: center;
-    padding-top: 30px;
+    margin-left: 610px;
+    padding-top: 25px;
     color: rgb(100, 99, 99);
 }

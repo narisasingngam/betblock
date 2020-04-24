@@ -1,7 +1,7 @@
 .pic {
     height: 230px;
-    margin-left: 195px;
-    margin-top: 50px;
+    margin-left: 200px;
+    margin-top: 100px;
     margin-bottom: 100px;
 }
 
@@ -9,15 +9,48 @@
     height: 50px;
     width: 150px;
     margin-top: -20px;
-    margin-left: 635px;
-    background-color: rgb(3, 167, 167);
+    margin-left: 630px;
     color: white;
-    font-size: 25px;
+    font-size: 40px;
     font-family: "Times New Roman", Times, serif;
 }
 
-.username{
+.roll {
+    flex: 2;
     margin-top: 50px;
-    margin-left: 180px;
-    
+}
+
+.start-roll{
+    margin:50px 30px 0 42%;
+}
+.reset-btn{
+    margin:50px 0 0 0;
+}
+
+.dropdown {
+    width: 50px;
+    margin: 50px;
+    margin-top: 50px;
+    color:rgb(130, 219, 216);
+}
+
+.word {
+    margin-top: 52px;
+    margin-left: 100px;
+    margin-right: -30px;
+    font-size: 25px;
+    font-family: "Times New Roman", Times, serif;
+}
+.card-bet{
+    display: flex;
+}
+
+.card-detail{
+    flex: 1;
+    margin: 10px 0 0 10px;
+}
+
+.row-bet{
+    margin-top: 20px;
+
 }
