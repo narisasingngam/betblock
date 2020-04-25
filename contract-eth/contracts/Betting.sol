@@ -305,5 +305,3 @@ contract Betting{
         return times;
    }
 }
-
-
