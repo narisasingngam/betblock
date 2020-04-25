@@ -1,12 +1,14 @@
 import Cookies from 'universal-cookie';
 import React, { Component } from 'react'
 import { Row } from 'react-bootstrap';
-import { Button,Card, Modal } from 'react-bootstrap';
+import { Button, Card, Modal } from 'react-bootstrap';
 import RollingItem from 'react-rolling-item';
 import './../styles/bet.css';
 import img from '../pic/bg-fruit.png'
 import Web3 from 'web3'
 import DropdownChoice from './../component/DropdownChoice'
+import getWeb3 from './../utils/getWeb3'
+import BettingContract from './../contracts/Betting.json'
 
 export class Bet extends Component {
 
@@ -28,7 +30,11 @@ export class Bet extends Component {
       betItem3: "Choose",
       list: [],
       item: ["Apple", "Broccoli", "Carrot", "Tomato", "Cucumber", "Pie apple"],
-      colour: ["Red", "Green", "Orange"]
+      colour: ["Red", "Green", "Orange"],
+      web3: '',
+      Amount: '',
+      InputAmount: '',
+      weiConversion: 1000000000000000000
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -40,6 +46,7 @@ export class Bet extends Component {
     this.getItem1 = this.getItem1.bind(this)
     this.getItem2 = this.getItem2.bind(this)
     this.getItem3 = this.getItem3.bind(this)
+    this.bet = this.bet.bind(this);
   }
 
   async loadBlockChain() {
@@ -56,15 +63,62 @@ export class Bet extends Component {
     }.bind(this));
   }
 
-  componentDidMount() {
-    this.loadBlockChain()
+  async loadWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    }
+    else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    }
+    else {
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    }
+  }
+
+  async bet() {
+    const web3 = window.web3
+    // Load account
+    const accounts = await web3.eth.getAccounts()
+    console.log(accounts)
+    const contract = new web3.eth.Contract(BettingContract.abi, '0xff331F61C22344b9D29d6510aE151dd63Dbf10C8')
+    contract.methods.bet(1,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
+    console.log(contract)
+  }
+
+  web3() {
+    getWeb3.then(results => {
+      /*After getting web3, we save the informations of the web3 user by
+      editing the state variables of the component */
+      results.web3.eth.getAccounts((error, acc) => {
+        //this.setState is used to edit the state variables
+        this.setState({
+          web3: results.web3
+        })
+      });
+      //At the end of the first promise, we return the loaded web3
+      return results.web3
+    }).then(results => {
+      //In the next promise, we pass web3 (in results) to the getAmount function
+      this.getAmount(results)
+      console.log("Dai")
+    }).catch(() => {
+      //If no web3 provider was found, log it in the console
+      console.log('Error finding web3.')
+    })
+  }
+
+  async componentDidMount() {
+    await this.loadWeb3()
+    await this.loadBlockChain()
+    await this.web3()
   }
 
   changeType(val) {
     this.setState({ bettype: val })
-    if(val === "Colour"){
+    if (val === "Colour") {
       this.setState({ list: this.state.colour })
-    } else if(val === "Figure"){
+    } else if (val === "Figure") {
       this.setState({ list: this.state.item })
     }
   }
@@ -103,6 +157,7 @@ export class Bet extends Component {
 
   handleShow() {
     this.setState({ show: true })
+    this.bet()
   }
 
   handleClose() {
@@ -184,8 +239,8 @@ export class Bet extends Component {
 
           <div className="word">Bet number:</div>
           <DropdownChoice item={bnumber} theme={"info"} title={this.state.betnum} sendData={this.changeValue} />
-          
-          {(()=> {
+
+          {(() => {
             const num = this.state.betnum
             const list_item = this.state.list
 
@@ -196,7 +251,7 @@ export class Bet extends Component {
             } else if (num === '2') {
               return <div style={{ display: 'flex' }} >
                 <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem1} sendData={this.getItem1} />
-                <DropdownChoice item={list_item} theme={"outline-secondary"}title={this.state.betItem2} sendData={this.getItem2} />
+                <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem2} sendData={this.getItem2} />
               </div>;
             } else {
               return <div style={{ display: 'flex' }} >

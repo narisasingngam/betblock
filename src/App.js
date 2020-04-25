@@ -5,6 +5,7 @@ import Web3 from 'web3'
 import history from "./history";
 import { Button, Card, InputGroup, FormControl } from 'react-bootstrap';
 import Cookies from 'universal-cookie';
+import getWeb3 from './utils/getWeb3.js';
 
 
 export default class App extends React.Component {
@@ -15,7 +16,9 @@ export default class App extends React.Component {
     {
       account: '',
       name: '',
-      balance: ''
+      balance: '',
+      web3 : '',
+      address: '',
     }
     this.handleChange = this.handleChange.bind(this);
 
@@ -30,23 +33,41 @@ export default class App extends React.Component {
     this.setState({ account: accounts[0] })
   }
 
+  callWeb3(){
+    getWeb3.then(results => {
+      /*After getting web3, we save the informations of the web3 user by
+      editing the state variables of the component */
+      results.web3.eth.getAccounts( (error,acc) => {
+        //this.setState is used to edit the state variables
+        this.setState({
+          address: acc[0],
+          web3: results.web3
+        })
+      });
+    }).catch( () => {
+      //If no web3 provider was found, log it in the console
+      console.log('Error finding web3.')
+    })
+  }
+
   handleChange(event){
       this.setState({name: event.target.value})
   }
 
   componentDidMount() {
-    this.loadBlockChain()
+    // this.loadBlockChain()
+    this.callWeb3()
   }
   render() {
     const cookies = new Cookies();
     cookies.set('username', this.state.name, { path: '/' });
-    cookies.set('address', this.state.account, { path: '/' })
+    cookies.set('address', this.state.address, { path: '/' })
     console.log(cookies.get('username'));
 
     const renderAuthButton = () => {
-      if (this.state.account !== undefined) {
+      if (this.state.address !== undefined) {
         return <div className="adress">
-          <Card body className="card-ad">Account address: {this.state.account}</Card>
+          <Card body className="card-ad">Account address: {this.state.address}</Card>
           <Card body className="card-input">Create Name :
           <InputGroup className="mb-3">
               <FormControl
