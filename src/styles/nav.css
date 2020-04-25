@@ -1,4 +1,13 @@
 .nav{
-    background-color: aqua;
+    background-color: rgb(198, 241, 241);
     height: 100px;
+}
+
+.head{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 35px;
+    text-align: center;
+    margin-left: 610px;
+    padding-top: 25px;
+    color: rgb(100, 99, 99);
 }

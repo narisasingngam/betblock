@@ -1,14 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+// import App from './App';
 import * as serviceWorker from './serviceWorker';
 import Navbar from './component/Navbar';
+import Routes from './Routes';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { CookiesProvider } from 'react-cookie';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Navbar/>
-    <App />
+    <CookiesProvider>
+      <Navbar />
+      <Routes />
+    </CookiesProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
