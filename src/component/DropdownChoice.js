@@ -6,6 +6,7 @@ export class DropdownChoice extends Component {
 
 
     changeItem(object) {
+        console.log(object)
         this.props.sendData(object);
     }
     
