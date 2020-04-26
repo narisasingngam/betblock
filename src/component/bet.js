@@ -28,7 +28,8 @@ export class Bet extends Component {
       betItem3: "Choose",
       list: [],
       item: ["Apple", "Broccoli", "Carrot", "Tomato", "Cucumber", "Pie apple"],
-      colour: ["Red", "Green", "Orange"]
+      colour: ["Red", "Green", "Orange"], 
+      array: Array(10).fill("")
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -73,16 +74,25 @@ export class Bet extends Component {
     this.setState({ betnum: val })
   }
 
-  getItem1(val) {
+  getItem1(val, index) {
     this.setState({ betItem1: val })
+    this.setState(
+      ({ array }) => ({ array: [...array.slice(0, index), val, ...array.slice(index+1)] })
+    )
   }
 
-  getItem2(val) {
+  getItem2(val, index) {
     this.setState({ betItem2: val })
+    this.setState(
+      ({ array }) => ({ array: [...array.slice(0, index), val, ...array.slice(index+1)] })
+    )
   }
 
-  getItem3(val) {
+  getItem3(val, index) {
     this.setState({ betItem3: val })
+    this.setState(
+      ({ array }) => ({ array: [...array.slice(0, index), val, ...array.slice(index+1)] })
+    )
   }
 
   onClick(e) {
