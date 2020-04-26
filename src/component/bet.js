@@ -106,14 +106,20 @@ export class Bet extends Component {
     // Load account
     const accounts = await web3.eth.getAccounts()
     console.log(accounts)
-    const contract = new web3.eth.Contract(BettingContract.abi, '0xff331F61C22344b9D29d6510aE151dd63Dbf10C8')
+    const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
     return contract
   }
 
   async bet() {
-    const contract = await this.getContract()
+    const web3 = window.web3
+    // Load account
+    const accounts = await web3.eth.getAccounts()
+    console.log(accounts)
+    const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
     contract.methods.bet(1,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
-    console.log(contract)
+    .then(contract.methods.getBetStatus().call({from: this.state.address})
+    .then((isBet) => {console.log(isBet)})
+    )
   }
 
   async setResult() {
@@ -127,7 +133,6 @@ export class Bet extends Component {
     await this.loadWeb3()
     await this.loadBlockChain()
     await this.web3()
-
   }
 
   changeType(val) {
