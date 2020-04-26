@@ -51,6 +51,7 @@ export class Bet extends Component {
     this.confirm = this.confirm.bind(this)
     this.getResultItem = this.getResultItem.bind(this)
     this.setResultColor = this.setResultColor.bind(this)
+    this.setResult = this.setResult.bind(this)
   }
 
   async loadBlockChain() {
@@ -125,12 +126,16 @@ export class Bet extends Component {
 
   async setResult() {
     const contract = await this.getContract()
+    let temp = [0,2,4]
     for(let i = 0; i < 3; i++){
-      let color = this.setResultColor(this.state.resultItem[i])
-      console.log(color)
-      // contract.methods.setResult(i,this.state.resultItem[i],color);
+      let setColor = this.setResultColor(temp[i])
+      console.log(setColor)
+      await contract.methods.setResult(i,temp[i],setColor).send({from: this.state.address});
+      const symbol = await contract.methods.getDiceSymbol(i).call()
+      console.log("Symbol: "+symbol)
+      const color = await contract.methods.getDiceColor(i).call()
+      console.log("Color: "+color)
     }
-    // console.log(contract.methods.getDiceSymbol(0)+" "+contract.methods.getDiceColor(0))
   }
 
   async componentDidMount() {
@@ -199,6 +204,7 @@ export class Bet extends Component {
         this.setState({ disable: !this.state.disable });
       }, 1500);
     });
+    this.setResult()
     console.log(this.state.array)
   }
 

@@ -59,10 +59,12 @@ contract Betting{
    }
    
    //set result of dice No. that come from front-end 
-   function setResult(uint256 diceNo, Symbol _symbol, Color _color) public{
+   function setResult(Symbol[] memory _symbol, Color[] memory _color) public{
        require(playerInfo[msg.sender].isBetSet == true, "You need to bet first.");
-       resultDices[diceNo].symbol = _symbol;
-       resultDices[diceNo].color = _color;
+       for(uint256 i = 0; i < 3; i++){
+           resultDices[i].symbol = _symbol[i];
+           resultDices[i].color = _color[i];
+       }
    }
    
    //distribute the prizes for each player following the type of bet.
