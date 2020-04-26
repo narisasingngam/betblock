@@ -2,13 +2,12 @@ import Cookies from 'universal-cookie';
 import React, { Component } from 'react'
 import { Row } from 'react-bootstrap';
 import { Button, Card, Modal } from 'react-bootstrap';
-import RollingItem from 'react-rolling-item';
 import './../styles/bet.css';
-import img from '../pic/bg-fruit.png'
 import Web3 from 'web3'
 import DropdownChoice from './../component/DropdownChoice'
 import getWeb3 from './../utils/getWeb3'
 import BettingContract from './../contracts/Betting.json'
+import RollingItem from './RollingItems'
 
 export class Bet extends Component {
 
@@ -35,6 +34,7 @@ export class Bet extends Component {
       Amount: '',
       InputAmount: '',
       weiConversion: 1000000000000000000,
+      resultItem: [],
       array: []
     }
     this.onClick = this.onClick.bind(this)
@@ -48,6 +48,8 @@ export class Bet extends Component {
     this.getItem2 = this.getItem2.bind(this)
     this.getItem3 = this.getItem3.bind(this)
     this.bet = this.bet.bind(this);
+    this.confirm = this.confirm.bind(this)
+    this.getResultItem = this.getResultItem.bind(this)
   }
 
   async loadBlockChain() {
@@ -156,6 +158,11 @@ export class Bet extends Component {
     )
   }
 
+  getResultItem(val){
+    this.setState({ resultItem: val})
+    console.log(this.state.resultItem)
+  }
+
   onClick(e) {
     this.setState({ start: !this.state.start }, () => {
       setTimeout(() => {
@@ -171,15 +178,21 @@ export class Bet extends Component {
       this.setState({ reset: false });
       this.setState({ disable: !this.state.disable });
     });
+    this.setState({resultItem: []})
   }
 
   handleShow() {
     this.setState({ show: true })
-    this.bet()
   }
 
   handleClose() {
     this.setState({ show: false })
+  }
+
+  async confirm(){
+    this.setState({ show: false })
+    await this.bet()
+    await this.loadWeb3()
   }
 
   render() {
@@ -197,7 +210,7 @@ export class Bet extends Component {
                 <Card.Title>Hello {this.state.username}</Card.Title>
                 Bet: <input></input>
                 <Button variant="primary" style={{ marginLeft: '25px' }} onClick={this.handleShow}>
-                  Confirm
+                  Enter
                 </Button>
 
                 <Modal show={this.state.show} onHide={this.handleClose}>
@@ -209,43 +222,15 @@ export class Bet extends Component {
                     <Button variant="secondary" onClick={this.handleClose}>
                       Close
                     </Button>
-                    <Button variant="primary" onClick={this.handleClose}>
-                      Save Changes
+                    <Button variant="primary" onClick={this.confirm}>
+                      Confirm
                     </Button>
                   </Modal.Footer>
                 </Modal>
               </Card.Body>
             </Card>
           </div>
-          <div className="roll">
-            <RollingItem
-              on={this.state.start}
-              column={3}
-              backgroundImage={img}
-              backgroundSize="600px 564px"
-              introItemInfo={{ x: -437, y: -406 }}
-              itemInfo={
-                [
-                  { x: -39, y: -217, id: 'item_1', probability: 0 },
-                  { x: -39, y: -406, id: 'item_2', probability: 0 },
-                  { x: -241, y: -28, id: 'item_3', probability: 0 },
-                  { x: -241, y: -217, id: 'item_4', probability: 0 },
-                  { x: -241, y: -406, id: 'item_5', probability: 0 },
-                  { x: -39, y: -28, id: 'item_6', probability: 0 },
-                  // { x: -437, y: -28, id: 'item_6', probability: 0 },
-                  //   { x: -437, y: -217, id: 'item_7', probability: 0 },
-                  //  { x: -437, y: -406, id: 'item_8', probability: 0 },
-                ]
-              }
-              width={177}
-              height={181}
-              startDelay={1000}
-              fixedIds={[3, 4, 7]}
-              reset={this.state.reset}
-              completionAnimation={true}
-              onProgress={(isProgress, result) => { console.log(result); }}
-            />
-          </div>
+          <RollingItem start={this.state.start} reset={this.state.reset} sendResultItem={this.getResultItem} />
         </div>
         <Button variant="outline-info" className="start-roll" onClick={this.onClick} disabled={this.state.disable}>
           ROLL
