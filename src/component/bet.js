@@ -28,14 +28,14 @@ export class Bet extends Component {
       betItem1: "Choose",
       betItem2: "Choose",
       betItem3: "Choose",
-      item: ["Apple", "Broccoli", "Carrot", "Tomato", "Cucumber", "Pie apple"],
+      item: ["Apple", "Tomato", "Brocoli", "Cucumber", "Carrot", "Pineapple"],
       colour: ["Red", "Green", "Orange"],
       list: ["Red", "Green", "Orange"],
       web3: '',
       Amount: '',
       InputAmount: '',
       weiConversion: 1000000000000000000,
-      array: Array().fill("")
+      array: []
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -126,6 +126,7 @@ export class Bet extends Component {
 
   changeValue(val) {
     this.setState({ betnum: val })
+    this.setState({ array: [] })
   }
 
   getItem1(val) {
