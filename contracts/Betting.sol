@@ -1,4 +1,4 @@
-pragma solidity >=0.5.16 <0.6.0;
+pragma solidity >=0.5.0 <0.6.0;
 
 contract Betting{
     address payable public owner;
@@ -46,7 +46,7 @@ contract Betting{
    //bet the money
    function bet(uint8 _typeSelected, Symbol[] memory _symbols, Color[] memory _colors) public payable{
       require(playerInfo[msg.sender].isBetSet == false, "You already bet.");
-      require(msg.value >= minBet && msg.value <= maxBet, "You must bet between 0.0001 and 0.01 ether");
+      require(msg.value >= minBet && msg.value <= maxBet, "You must bet between 0.0001 and 0.01 ether.");
       playerInfo[msg.sender].amountBet = msg.value;
       playerInfo[msg.sender].typeSelected = _typeSelected;
       playerInfo[msg.sender].isBetSet = true;
@@ -60,6 +60,7 @@ contract Betting{
    
    //set result of dice No. that come from front-end 
    function setResult(uint256 diceNo, Symbol _symbol, Color _color) public{
+       require(playerInfo[msg.sender].isBetSet == true, "You need to bet first.");
        resultDices[diceNo].symbol = _symbol;
        resultDices[diceNo].color = _color;
    }
@@ -114,6 +115,10 @@ contract Betting{
     //get color of dice No.
     function getDiceColor(uint diceNo) public view returns (Color){
         return resultDices[diceNo].color;
+    }
+    
+    function getBetStatus() public view returns (bool){
+        return playerInfo[msg.sender].isBetSet;
     }
    
     //get balance of this contract
@@ -305,3 +310,5 @@ contract Betting{
         return times;
    }
 }
+
+

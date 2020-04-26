@@ -79,16 +79,6 @@ export class Bet extends Component {
     }
   }
 
-  async bet() {
-    const web3 = window.web3
-    // Load account
-    const accounts = await web3.eth.getAccounts()
-    console.log(accounts)
-    const contract = new web3.eth.Contract(BettingContract.abi, '0xff331F61C22344b9D29d6510aE151dd63Dbf10C8')
-    contract.methods.bet(1,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
-    console.log(contract)
-  }
-
   web3() {
     getWeb3.then(results => {
       /*After getting web3, we save the informations of the web3 user by
@@ -111,10 +101,33 @@ export class Bet extends Component {
     })
   }
 
+  async getContract(){
+    const web3 = window.web3
+    // Load account
+    const accounts = await web3.eth.getAccounts()
+    console.log(accounts)
+    const contract = new web3.eth.Contract(BettingContract.abi, '0xff331F61C22344b9D29d6510aE151dd63Dbf10C8')
+    return contract
+  }
+
+  async bet() {
+    const contract = await this.getContract()
+    contract.methods.bet(1,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
+    console.log(contract)
+  }
+
+  async setResult() {
+    const contract = await this.getContract()
+    contract.methods.setResult(0,1,0);
+    contract.methods.setResult(1,2,1);
+    contract.methods.setResult(2,4,2);
+  }
+
   async componentDidMount() {
     await this.loadWeb3()
     await this.loadBlockChain()
     await this.web3()
+
   }
 
   changeType(val) {
