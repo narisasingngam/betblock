@@ -35,7 +35,8 @@ export class Bet extends Component {
       InputAmount: '',
       weiConversion: 1000000000000000000,
       resultItem: [],
-      array: []
+      array: [], 
+      isBet: false
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -119,8 +120,9 @@ export class Bet extends Component {
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
     contract.methods.bet(1,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
     .then(contract.methods.getBetStatus().call({from: this.state.address})
-    .then((isBet) => {console.log(isBet)})
+    .then(this.setState({isBet: true}))
     )
+    console.log(this.state.isBet)
   }
 
   async setResult() {
@@ -238,7 +240,7 @@ export class Bet extends Component {
               <Card.Body>
                 <Card.Title>Hello {this.state.username}</Card.Title>
                 Bet: <input></input>
-                <Button variant="primary" style={{ marginLeft: '25px' }} onClick={this.handleShow}>
+                <Button variant="primary" style={{ marginLeft: '25px' }} onClick={this.handleShow} disabled={this.state.isBet}>
                   Enter
                 </Button>
 
