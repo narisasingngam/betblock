@@ -126,11 +126,15 @@ export class Bet extends Component {
   async setResult() {
     const contract = await this.getContract()
     for(let i = 0; i < 3; i++){
-      let color = this.setResultColor(this.state.resultItem[i])
-      console.log(color)
-      // contract.methods.setResult(i,this.state.resultItem[i],color);
+      if(this.state.resultItem === undefined){
+        this.setResult()
+        return;
+      }else{
+        let color = this.setResultColor(this.state.resultItem[i])
+        contract.methods.setResult(i,this.state.resultItem[i],color).send({ from: this.state.address})
+        console.log(contract.methods.getDiceSymbol(0).call()+" "+contract.methods.getDiceColor(0).call())
+      }
     }
-    // console.log(contract.methods.getDiceSymbol(0)+" "+contract.methods.getDiceColor(0))
   }
 
   async componentDidMount() {
@@ -199,6 +203,7 @@ export class Bet extends Component {
         this.setState({ disable: !this.state.disable });
       }, 1500);
     });
+    this.setResult()
     console.log(this.state.array)
   }
 
