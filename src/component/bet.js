@@ -27,14 +27,15 @@ export class Bet extends Component {
       betItem1: "Choose",
       betItem2: "Choose",
       betItem3: "Choose",
-      list: [],
       item: ["Apple", "Broccoli", "Carrot", "Tomato", "Cucumber", "Pie apple"],
       colour: ["Red", "Green", "Orange"],
+      list: ["Red", "Green", "Orange"],
       web3: '',
       Amount: '',
       InputAmount: '',
       weiConversion: 1000000000000000000,
-      resultItem: []
+      resultItem: [],
+      array: Array().fill("")
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -131,14 +132,29 @@ export class Bet extends Component {
 
   getItem1(val) {
     this.setState({ betItem1: val })
+    var index = 0;
+    var data = this.state.list.indexOf(val);
+    this.setState(
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+    )
   }
 
   getItem2(val) {
     this.setState({ betItem2: val })
+    var index = 1;
+    var data = this.state.list.indexOf(val);
+    this.setState(
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+    )
   }
 
   getItem3(val) {
     this.setState({ betItem3: val })
+    var index = 2;
+    var data = this.state.list.indexOf(val);
+    this.setState(
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+    )
   }
 
   getResultItem(val){
@@ -153,6 +169,7 @@ export class Bet extends Component {
         this.setState({ disable: !this.state.disable });
       }, 1500);
     });
+    console.log(this.state.array)
   }
 
   onClickReset(e) {
