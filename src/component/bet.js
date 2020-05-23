@@ -129,15 +129,17 @@ export class Bet extends Component {
   async setResult() {
     const contract = await this.getContract()
     let temp = [0,2,4]
+    let setColor = [];
+
     for(let i = 0; i < 3; i++){
-      let setColor = this.setResultColor(temp[i])
+      setColor.push(this.setResultColor(temp[i]))
       console.log(setColor)
-      await contract.methods.setResult(i,temp[i],setColor).send({from: this.state.address});
-      const symbol = await contract.methods.getDiceSymbol(i).call()
-      console.log("Symbol: "+symbol)
-      const color = await contract.methods.getDiceColor(i).call()
-      console.log("Color: "+color)
     }
+      await contract.methods.setResult(temp,setColor).send({from: this.state.address});
+      const symbol = await contract.methods.getDiceSymbol(0).call()
+      console.log("Symbol: "+symbol)
+      const color = await contract.methods.getDiceColor(0).call()
+      console.log("Color: "+color)
   }
 
   async componentDidMount() {
