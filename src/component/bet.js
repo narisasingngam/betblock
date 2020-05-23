@@ -35,7 +35,7 @@ export class Bet extends Component {
       InputAmount: '',
       weiConversion: 1000000000000000000,
       resultItem: [],
-      array: [], 
+      array: [],
       isBet: false
     }
     this.onClick = this.onClick.bind(this)
@@ -104,11 +104,11 @@ export class Bet extends Component {
     })
   }
 
-  async getContract(){
+  async getContract() {
     const web3 = window.web3
     // Load account
     const accounts = await web3.eth.getAccounts()
-    console.log(accounts)
+    // console.log(accounts)
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
     return contract
   }
@@ -119,24 +119,32 @@ export class Bet extends Component {
     const accounts = await web3.eth.getAccounts()
     console.log(accounts)
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
-    contract.methods.bet(1,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
-    .then(contract.methods.getBetStatus().call({from: this.state.address})
-    .then(this.setState({isBet: true}))
-    )
+    contract.methods.bet(1, [1], [1]).send({ from: this.state.address, value: 100000000000000 })
+      .then(contract.methods.getBetStatus().call({ from: this.state.address })
+        .then(this.setState({ isBet: true }))
+      )
     console.log(this.state.isBet)
   }
 
   async setResult() {
     const contract = await this.getContract()
-    let temp = [0,2,4]
-    for(let i = 0; i < 3; i++){
-      let setColor = this.setResultColor(temp[i])
+    let setColor = []
+
+    if (this.state.resultItem === undefined) {
+      this.setResult()
+      return;
+    } else {
+      for (let i = 0; i < 3; i++) {
+        setColor.push(this.setResultColor(this.state.resultItem[i]))
+      }
       console.log(setColor)
-      await contract.methods.setResult(i,temp[i],setColor).send({from: this.state.address});
-      const symbol = await contract.methods.getDiceSymbol(i).call()
-      console.log("Symbol: "+symbol)
-      const color = await contract.methods.getDiceColor(i).call()
-      console.log("Color: "+color)
+      console.log(this.state.resultItem)
+
+      await contract.methods.setResult(this.state.resultItem, setColor).send({ from: this.state.address });
+      const symbol = await contract.methods.getDiceSymbol(1).call()
+      console.log("Symbol: " + symbol)
+      const color = await contract.methods.getDiceColor(1).call()
+      console.log("Color: " + color)
     }
   }
 
@@ -165,7 +173,7 @@ export class Bet extends Component {
     var index = 0;
     var data = this.state.list.indexOf(val);
     this.setState(
-      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
     )
   }
 
@@ -174,7 +182,7 @@ export class Bet extends Component {
     var index = 1;
     var data = this.state.list.indexOf(val);
     this.setState(
-      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
     )
   }
 
@@ -183,19 +191,22 @@ export class Bet extends Component {
     var index = 2;
     var data = this.state.list.indexOf(val);
     this.setState(
-      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
     )
   }
 
-  getResultItem(val){
-    this.setState({ resultItem: val})
+  getResultItem(val) {
+    this.setState({ resultItem: val })
     console.log(this.state.resultItem)
   }
 
-  setResultColor(val){
-    if(val === 0 || val === 1)return 0;
-    else if(val === 2 || val === 3)return 1;
-    else if(val === 4 || val === 5)return 2;
+  setResultColor(val) {
+    //red
+    if (val === 0 || val === 1) return 0;
+    //green
+    else if (val === 2 || val === 3) return 1;
+    //or
+    else if (val === 4 || val === 5) return 2;
     return;
   }
 
@@ -215,10 +226,10 @@ export class Bet extends Component {
       this.setState({ reset: false });
       this.setState({ disable: !this.state.disable });
     });
-    this.setState({resultItem: []})
+    this.setState({ resultItem: [] })
   }
 
-  handleShow() {
+ async handleShow() {
     this.setState({ show: true })
   }
 
@@ -226,7 +237,7 @@ export class Bet extends Component {
     this.setState({ show: false })
   }
 
-  async confirm(){
+  async confirm() {
     this.setState({ show: false })
     await this.bet()
     await this.loadWeb3()
