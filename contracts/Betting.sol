@@ -17,6 +17,7 @@ contract Betting{
         uint8 typeSelected;
         DiceFace[] faceSelected;
         bool isBetSet;
+        DiceFace[] resultDices;
     }
     
     struct DiceFace{
@@ -24,7 +25,7 @@ contract Betting{
         Color color;
     }
     
-    DiceFace[numberOfDice] resultDices;
+    // DiceFace[numberOfDice] resultDices;
     mapping(address => Player) public playerInfo;
     function() external payable {}
     
@@ -61,9 +62,10 @@ contract Betting{
    //set result of dice No. that come from front-end 
    function setResult(Symbol[] memory _symbol, Color[] memory _color) public{
        require(playerInfo[msg.sender].isBetSet == true, "You need to bet first.");
+       
        for(uint256 i = 0; i < 3; i++){
-           resultDices[i].symbol = _symbol[i];
-           resultDices[i].color = _color[i];
+           playerInfo[msg.sender].resultDices[i].symbol = _symbol[i];
+           playerInfo[msg.sender].resultDices[i].color = _color[i];
        }
    }
    
@@ -104,19 +106,18 @@ contract Betting{
     //reset the round
     function reset() public{
         delete playerInfo[msg.sender];
-        delete resultDices;
         moneyToPay = 0;
         prize = 0;
     }
  
     //get symbol of dice No.
     function getDiceSymbol(uint diceNo) public view returns (Symbol){
-        return resultDices[diceNo].symbol;
+        return playerInfo[msg.sender].resultDices[diceNo].symbol;
     }
     
     //get color of dice No.
     function getDiceColor(uint diceNo) public view returns (Color){
-        return resultDices[diceNo].color;
+        return playerInfo[msg.sender].resultDices[diceNo].color;
     }
     
     function getBetStatus() public view returns (bool){
@@ -144,8 +145,8 @@ contract Betting{
    /**bet with single symbol selected. 
     * if match 1 die get 1 times of bet, if 2 dice get 2 time of bet, if 3 dice get 3 time of bet.*/
    function singleDiceSymbolWinner(address payable playerAddress) public returns (uint256 times){
-        DiceFace[3] memory temp = resultDices;
         Player memory p = playerInfo[playerAddress];
+        DiceFace[] memory temp = p.resultDices;
         uint256 count = 0;
 
         for(uint256 i = 0; i < p.faceSelected.length; i++){
@@ -163,8 +164,9 @@ contract Betting{
     /**bet with pair symbol selected. 
     * if match 2 dice get 5 times of bet */
    function pairDiceSymbolWinner(address payable playerAddress) public returns (uint256 times){
-       DiceFace[3] memory temp = resultDices;
        Player memory p = playerInfo[playerAddress];
+       DiceFace[] memory temp = p.resultDices;
+
        uint256 count = 0;
 
        for(uint256 i = 0; i < p.faceSelected.length; i++){
@@ -190,8 +192,8 @@ contract Betting{
    /**bet with single symbol selected. 
     * if match 3 dice get 3 times of bet */
    function tripleDiceSymbolWinner(address payable playerAddress) public returns (uint256 times){
-       DiceFace[3] memory temp = resultDices;
        Player memory p = playerInfo[playerAddress];
+       DiceFace[] memory temp = p.resultDices;
        uint256 count = 0;
        
        for(uint256 i = 0; i < p.faceSelected.length; i++){
@@ -213,8 +215,8 @@ contract Betting{
     /**bet with single color of the symbol selected. 
     * if match 1 of 3 dice get 1 time of bet */
    function singleDiceColorWinner(address payable playerAddress) public returns (uint256 times){
-        DiceFace[3] memory temp = resultDices;
         Player memory p = playerInfo[playerAddress];
+        DiceFace[] memory temp = p.resultDices;
         uint256 count = 0;
 
         for(uint256 i = 0; i < p.faceSelected.length; i++){
@@ -236,8 +238,8 @@ contract Betting{
    /**bet with pair color of the symbol selected. 
     * if match 1 pair get 3 times of bet */
    function pairDiceColorWinner(address payable playerAddress) public returns (uint256 times){
-        DiceFace[3] memory temp = resultDices;
         Player memory p = playerInfo[playerAddress];
+        DiceFace[] memory temp = p.resultDices;
         uint256 count = 0;
 
         for(uint256 i = 0; i < p.faceSelected.length; i++){
@@ -262,8 +264,8 @@ contract Betting{
    /**bet with 3 symbol with the same color is selected. 
     * if match all get 7 times of bet */
    function tripleDiceColorWinner(address payable playerAddress) public returns (uint256 times){
-        DiceFace[3] memory temp = resultDices;
         Player memory p = playerInfo[playerAddress];
+        DiceFace[] memory temp = p.resultDices;
         uint256 count = 0;
 
         for(uint256 i = 0; i < p.faceSelected.length; i++){
@@ -289,8 +291,8 @@ contract Betting{
     * it must match all the symbol that player selected
     * if match all get 20 times of bet */
    function tripleColorWinner(address payable playerAddress) public returns (uint256 times){
-        DiceFace[3] memory temp = resultDices;
         Player memory p = playerInfo[playerAddress];
+        DiceFace[] memory temp = p.resultDices;
         uint256 count = 0;
 
         for(uint256 i = 0; i < p.faceSelected.length; i++){
