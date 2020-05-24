@@ -134,7 +134,7 @@ export class Bet extends Component {
     const accounts = await web3.eth.getAccounts()
     console.log(accounts)
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
-    contract.methods.bet(this.state.typeSelect,this.state.array,this.state.arrayColor).send({ from: this.state.address,value: 100000000000000 })
+    contract.methods.bet(this.state.typeSelect,this.state.array,this.state.arrayColor).send({ from: this.state.address, value: 100000000000000 })
     .then(contract.methods.getBetStatus().call({from: this.state.address})
     .then((result)=>{this.setState({isBet: result})})
     )
