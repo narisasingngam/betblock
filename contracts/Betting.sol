@@ -6,8 +6,6 @@ contract Betting{
     uint256 private maxBet;
     uint8 constant private numberOfDice = 3;
     uint8 private numberOfFace = 6;
-    uint256 private moneyToPay;
-    uint256 private prize;
     
     enum Symbol {Apple, Tomato, Brocoli, Cucumber, Carrot, Pineapple}
     enum Color {Red, Green, Orange}
@@ -18,6 +16,8 @@ contract Betting{
         DiceFace[] faceSelected;
         bool isBetSet;
         DiceFace[] resultDices;
+        uint256 prize;
+        uint256 monetToPay;
     }
     
     struct DiceFace{
@@ -58,8 +58,8 @@ contract Betting{
           }));
       }
    }
-   
-   //set result of dice No. that come from front-end 
+    
+    //set result of dice No. that come from front-end 
    function setResult(Symbol[] memory _symbol, Color[] memory _color) public{
        require(playerInfo[msg.sender].isBetSet == true, "You need to bet first.");
        
@@ -85,18 +85,19 @@ contract Betting{
            else if(playerInfo[player].typeSelected == 7)times = tripleColorWinner(player);
 
            if(times != 0){
-                prize = bet*times;
+                playerInfo[player].prize = bet*times;
            }else{
-                prize = 0;
+                playerInfo[player].prize = 0;
            }
     }
     
-    //pay to player if moneyToPay != 0 or pay to owner if = 0
+    //pay to player if prize != 0 or pay to owner if = 0
     function cashOut() public{
         uint256 bet = playerInfo[msg.sender].amountBet;
-        if(moneyToPay != 0){
-                msg.sender.transfer(bet+moneyToPay);
-                emit Sent(owner, msg.sender, bet+moneyToPay);
+
+        if(playerInfo[msg.sender].prize != 0){
+                msg.sender.transfer(bet+playerInfo[msg.sender].prize);
+                emit Sent(owner, msg.sender, bet+playerInfo[msg.sender].prize);
            }else{
                 owner.transfer(bet);
                 emit Sent(msg.sender, owner, bet);
@@ -106,8 +107,6 @@ contract Betting{
     //reset the round
     function reset() public{
         delete playerInfo[msg.sender];
-        moneyToPay = 0;
-        prize = 0;
     }
  
     //get symbol of dice No.
@@ -131,15 +130,14 @@ contract Betting{
     
     //get amount to pay 
     function getAmountToPay() public view returns (uint){
-        return prize;
+        return playerInfo[msg.sender].prize;
     }
     
     //pay by dealer following amount to pay.
-    function paybyDealer(uint amount) public payable{
+    function paybyDealer() public payable{
         require(msg.sender == owner);
-        require(address(msg.sender).balance >= amount);
-        require(msg.value >= amount);
-        moneyToPay +=  msg.value;
+        require(address(msg.sender).balance >= msg.value);
+        playerInfo[msg.sender].monetToPay += msg.value;
     }
     
    /**bet with single symbol selected. 
