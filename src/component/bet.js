@@ -36,7 +36,8 @@ export class Bet extends Component {
       weiConversion: 1000000000000000000,
       resultItem: [],
       array: [], 
-      isBet: false
+      isBet: false,
+      typeSelect: ''
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -53,6 +54,7 @@ export class Bet extends Component {
     this.getResultItem = this.getResultItem.bind(this)
     this.setResultColor = this.setResultColor.bind(this)
     this.setResult = this.setResult.bind(this)
+    this.getTypeSelected = this.getTypeSelected.bind(this)
   }
 
   async loadBlockChain() {
@@ -114,12 +116,16 @@ export class Bet extends Component {
   }
 
   async bet() {
+    console.log("Bet method")
+    console.log("Bet Type: "+this.state.bettype)
+    console.log("Bet Num: "+this.state.betnum)
+    this.getTypeSelected();
     const web3 = window.web3
     // Load account
     const accounts = await web3.eth.getAccounts()
     console.log(accounts)
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
-    contract.methods.bet(1,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
+    contract.methods.bet(this.state.typeSelect,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
     .then(contract.methods.getBetStatus().call({from: this.state.address})
     .then(this.setState({isBet: true}))
     )
@@ -214,6 +220,27 @@ export class Bet extends Component {
     return;
   }
 
+  getTypeSelected(){
+    let type = 0;
+    console.log("Bet Type: "+this.state.bettype)
+    console.log("Bet Num: "+this.state.betnum)
+    if(this.state.bettype === "Figure" && this.state.betnum === "1"){
+      type = 1;
+    }else if(this.state.bettype === "Figure" && this.state.betnum === "2"){
+      type = 2; 
+    }else if(this.state.bettype === "Figure" && this.state.betnum === "3"){
+      type = 3;
+    }else if(this.state.bettype === "Colour" && this.state.betnum === "1"){
+      type = 4;
+    }else if(this.state.bettype === "Colour" && this.state.betnum === "2"){
+      type = 5;
+    }else if(this.state.bettype === "Colour" && this.state.betnum === "3"){
+      type = 6;
+    }
+    console.log("TypeSelect: "+type);
+    this.setState({typeSelect: type});
+  }
+
   onClick(e) {
     this.setState({ start: !this.state.start }, () => {
       setTimeout(() => {
@@ -253,6 +280,8 @@ export class Bet extends Component {
 
     const btype = ["Colour", "Figure"]
     const bnumber = [1, 2, 3]
+
+    console.log(this.state.array)
 
     return (
       <div>
