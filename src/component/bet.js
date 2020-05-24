@@ -30,7 +30,7 @@ export class Bet extends Component {
       betItem3: "Choose",
       item: ["Apple", "Tomato", "Brocoli", "Cucumber", "Carrot", "Pineapple"],
       colour: ["Red", "Green", "Orange"],
-      list: ["Red", "Green", "Orange"],
+      list: ["Apple", "Tomato", "Brocoli", "Cucumber", "Carrot", "Pineapple"],
       web3: '',
       Amount: '',
       InputAmount: '',
@@ -128,7 +128,7 @@ export class Bet extends Component {
     const accounts = await web3.eth.getAccounts()
     console.log(accounts)
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
-    contract.methods.bet(this.state.typeSelect,[1],[1]).send({ from: this.state.address,value: 100000000000000 })
+    contract.methods.bet(this.state.typeSelect,this.state.array,[1]).send({ from: this.state.address,value: 100000000000000 })
     .then(contract.methods.getBetStatus().call({from: this.state.address})
     .then(this.setState({isBet: true}))
     )
@@ -189,10 +189,8 @@ export class Bet extends Component {
   }
 
   changeValue(val) {
-
     const num = this.state.numberSelected - parseInt(val)
-
-    this.setState({ betnum: val,array: [],selectBetColorNumber: Math.abs(num)})
+    this.setState({ betnum: val,array: [], selectBetColorNumber: Math.abs(num)})
   }
 
   getItem1(val) {
@@ -232,7 +230,7 @@ export class Bet extends Component {
     if (val === 0 || val === 1) return 0;
     //green
     else if (val === 2 || val === 3) return 1;
-    //or
+    //orange
     else if (val === 4 || val === 5) return 2;
     return;
   }
