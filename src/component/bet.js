@@ -39,7 +39,8 @@ export class Bet extends Component {
       array: [],
       isBet: false,
       numberSelected: 0,
-      selectBetColorNumber: 1
+      selectBetColorNumber: 1,
+      arrayColor: []
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -196,6 +197,9 @@ export class Bet extends Component {
     this.setState(
       ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
     )
+    this.setState(
+      ({ arrayColor }) => ({ arrayColor: [...arrayColor.slice(0, index),this.setResultColor(data), ...arrayColor.slice(index + 1)] })
+    )
   }
 
   getItem2(val) {
@@ -205,6 +209,9 @@ export class Bet extends Component {
     this.setState(
       ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
     )
+    this.setState(
+      ({ arrayColor }) => ({ arrayColor: [...arrayColor.slice(0, index),this.setResultColor(data), ...arrayColor.slice(index + 1)] })
+    )
   }
 
   getItem3(val) {
@@ -213,6 +220,9 @@ export class Bet extends Component {
     var data = this.state.list.indexOf(val);
     this.setState(
       ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
+    )
+    this.setState(
+      ({ arrayColor }) => ({ arrayColor: [...arrayColor.slice(0, index),this.setResultColor(data), ...arrayColor.slice(index + 1)] })
     )
   }
 
