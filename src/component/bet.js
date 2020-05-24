@@ -11,6 +11,7 @@ import RollingItem from './RollingItems'
 
 export class Bet extends Component {
 
+
   constructor(props) {
     super(props)
     const cookies = new Cookies();
@@ -37,7 +38,9 @@ export class Bet extends Component {
       resultItem: [],
       array: [], 
       isBet: false,
-      typeSelect: ''
+      typeSelect: '',
+      numberSelected: 0,
+      selectBetColorNumber: 1
     }
     this.onClick = this.onClick.bind(this)
     this.onClickReset = this.onClickReset.bind(this)
@@ -106,11 +109,11 @@ export class Bet extends Component {
     })
   }
 
-  async getContract(){
+  async getContract() {
     const web3 = window.web3
     // Load account
     const accounts = await web3.eth.getAccounts()
-    console.log(accounts)
+    // console.log(accounts)
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
     return contract
   }
@@ -133,32 +136,41 @@ export class Bet extends Component {
   }
 
   async setResult() {
-    const contract = await this.getContract();
+    const contract = await this.getContract()
     let temp = this.state.resultItem;
-    let setColor = [];
+    let setColor = []
 
-    for(let i = 0; i < 3; i++){
-      setColor.push(this.setResultColor(temp[i]))
-      console.log(setColor)
+    if (this.state.resultItem === undefined) {
+      this.setResult()
+      return;
+    } else {
+
+      for (let i = 0; i < 3; i++) {
+        setColor.push(this.setResultColor(temp[i]))
+        console.log(setColor)
+        console.log(this.state.resultItem)
+      }
     }
-      await contract.methods.setResult(temp,setColor).send({from: this.state.address});
 
-      await contract.methods.getDiceSymbol(1).call({from: this.state.address}).then((result)=>{
-        console.log("Symbol: "+result)
-      });
-      await contract.methods.getDiceColor(1).call({from: this.state.address}).then((result)=>{
-        console.log("Color: "+result)
+    await contract.methods.setResult(temp, setColor).send({ from: this.state.address });
+
+    await contract.methods.getDiceSymbol(1).call({ from: this.state.address }).then((result) => {
+      console.log("Symbol: " + result)
+    });
+    await contract.methods.getDiceColor(1).call({ from: this.state.address }).then((result) => {
+      console.log("Color: " + result)
+    });
+
+    await contract.methods.distributePrize().call({ from: this.state.address })
+      .then(() => {
+        contract.methods.getAmountToPay().call({ from: this.state.address });
+      }).then((result) => {
+        console.log("Prize: " + result);
+        contract.methods.paybyDealer().call({ from: '0xc6a997701692EF41667A3306C0CaF8EE3C810a58', value: result });
+      }).then(() => {
+        contract.methods.cashOut().call({ from: this.state.address });
       });
 
-      await contract.methods.distributePrize().call({from: this.state.address})
-        .then(()=>{
-          contract.methods.getAmountToPay().call({from: this.state.address});
-        }).then((result) => {
-          console.log("Prize: "+result);
-          contract.methods.paybyDealer().call({from: '0xc6a997701692EF41667A3306C0CaF8EE3C810a58', value: result});
-        }).then(()=>{
-          contract.methods.cashOut().call({from: this.state.address});
-        });
   }
 
   async componentDidMount() {
@@ -170,15 +182,17 @@ export class Bet extends Component {
   changeType(val) {
     this.setState({ bettype: val })
     if (val === "Colour") {
-      this.setState({ list: this.state.colour })
+      this.setState({ list: this.state.item, numberSelected: 0, selectBetColorNumber: 1 })
     } else if (val === "Figure") {
-      this.setState({ list: this.state.item })
+      this.setState({ list: this.state.item, numberSelected: 4, selectBetColorNumber: 3 })
     }
   }
 
   changeValue(val) {
-    this.setState({ betnum: val })
-    this.setState({ array: [] })
+
+    const num = this.state.numberSelected - parseInt(val)
+
+    this.setState({ betnum: val,array: [],selectBetColorNumber: Math.abs(num)})
   }
 
   getItem1(val) {
@@ -186,7 +200,7 @@ export class Bet extends Component {
     var index = 0;
     var data = this.state.list.indexOf(val);
     this.setState(
-      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
     )
   }
 
@@ -195,7 +209,7 @@ export class Bet extends Component {
     var index = 1;
     var data = this.state.list.indexOf(val);
     this.setState(
-      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
     )
   }
 
@@ -204,19 +218,22 @@ export class Bet extends Component {
     var index = 2;
     var data = this.state.list.indexOf(val);
     this.setState(
-      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index+1)] })
+      ({ array }) => ({ array: [...array.slice(0, index), data, ...array.slice(index + 1)] })
     )
   }
 
-  getResultItem(val){
-    this.setState({ resultItem: val})
+  getResultItem(val) {
+    this.setState({ resultItem: val })
     console.log(this.state.resultItem)
   }
 
-  setResultColor(val){
-    if(val === 0 || val === 1)return 0;
-    else if(val === 2 || val === 3)return 1;
-    else if(val === 4 || val === 5)return 2;
+  setResultColor(val) {
+    //red
+    if (val === 0 || val === 1) return 0;
+    //green
+    else if (val === 2 || val === 3) return 1;
+    //or
+    else if (val === 4 || val === 5) return 2;
     return;
   }
 
@@ -262,7 +279,7 @@ export class Bet extends Component {
     await contract.methods.reset().call();
   }
 
-  handleShow() {
+  async handleShow() {
     this.setState({ show: true })
   }
 
@@ -270,7 +287,7 @@ export class Bet extends Component {
     this.setState({ show: false })
   }
 
-  async confirm(){
+  async confirm() {
     this.setState({ show: false })
     await this.bet()
     await this.loadWeb3()
@@ -327,14 +344,14 @@ export class Bet extends Component {
           <DropdownChoice item={bnumber} theme={"info"} title={this.state.betnum} sendData={this.changeValue} />
 
           {(() => {
-            const num = this.state.betnum
+            const num = this.state.selectBetColorNumber
             const list_item = this.state.list
 
-            if (num === '1') {
+            if (num === 1) {
               return <div>
                 <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem1} sendData={this.getItem1} />
               </div>;
-            } else if (num === '2') {
+            } else if (num === 2) {
               return <div style={{ display: 'flex' }} >
                 <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem1} sendData={this.getItem1} />
                 <DropdownChoice item={list_item} theme={"outline-secondary"} title={this.state.betItem2} sendData={this.getItem2} />
