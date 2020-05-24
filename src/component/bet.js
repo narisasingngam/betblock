@@ -38,7 +38,7 @@ export class Bet extends Component {
       resultItem: [],
       array: [], 
       isBet: false,
-      typeSelect: '',
+      typeSelect: 0,
       numberSelected: 0,
       selectBetColorNumber: 1,
       arrayColor: []
@@ -121,17 +121,22 @@ export class Bet extends Component {
 
   async bet() {
     console.log("Bet method")
-    console.log("Bet Type: "+this.state.bettype)
-    console.log("Bet Num: "+this.state.betnum)
+    console.log("Type select: "+this.state.typeSelect)
+    console.log("Symbol: "+this.state.array)
+    console.log("Color: "+this.state.arrayColor)
+    console.log(typeof(this.state.typeSelect))
+    console.log(typeof(this.state.array[0]))
+    console.log(typeof(this.state.arrayColor[0]))
+
     this.getTypeSelected();
     const web3 = window.web3
     // Load account
     const accounts = await web3.eth.getAccounts()
     console.log(accounts)
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
-    contract.methods.bet(this.state.typeSelect,this.state.array,[1]).send({ from: this.state.address,value: 100000000000000 })
+    contract.methods.bet(this.state.typeSelect,this.state.array,this.state.arrayColor).send({ from: this.state.address,value: 100000000000000 })
     .then(contract.methods.getBetStatus().call({from: this.state.address})
-    .then(this.setState({isBet: true}))
+    .then((result)=>{this.setState({isBet: result})})
     )
     console.log(this.state.isBet)
   }
@@ -165,7 +170,8 @@ export class Bet extends Component {
     await contract.methods.distributePrize().call({ from: this.state.address })
       .then(() => {
         contract.methods.getAmountToPay().call({ from: this.state.address });
-      }).then((result) => {
+      }).then((error,result) => {
+        if(error){console.log(error)}
         console.log("Prize: " + result);
         contract.methods.paybyDealer().call({ from: '0xc6a997701692EF41667A3306C0CaF8EE3C810a58', value: result });
       }).then(() => {
@@ -263,6 +269,7 @@ export class Bet extends Component {
       type = 6;
     }
     console.log("TypeSelect: "+type);
+
     this.setState({typeSelect: type});
   }
 
@@ -284,7 +291,7 @@ export class Bet extends Component {
     });
     this.setState({resultItem: []})
     const contract = await this.getContract();
-    await contract.methods.reset().call();
+    await contract.methods.reset().call({from: this.state.address});
   }
 
   async handleShow() {

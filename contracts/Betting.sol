@@ -46,7 +46,7 @@ contract Betting{
     
    //bet the money
    function bet(uint8 _typeSelected, Symbol[] memory _symbols, Color[] memory _colors) public payable{
-      require(playerInfo[msg.sender].isBetSet == false, "You already bet.");
+    //   require(playerInfo[msg.sender].isBetSet == false, "You already bet.");
       require(msg.value >= minBet && msg.value <= maxBet, "You must bet between 0.0001 and 0.01 ether.");
       playerInfo[msg.sender].amountBet = msg.value;
       playerInfo[msg.sender].typeSelected = _typeSelected;
@@ -61,8 +61,7 @@ contract Betting{
     
     //set result of dice No. that come from front-end 
    function setResult(Symbol[] memory _symbol, Color[] memory _color) public{
-       require(playerInfo[msg.sender].isBetSet == true, "You need to bet first.");
-       
+    //    require(playerInfo[msg.sender].isBetSet == true, "You need to bet first.");
        for(uint256 i = 0; i < 3; i++){
            playerInfo[msg.sender].resultDices[i].symbol = _symbol[i];
            playerInfo[msg.sender].resultDices[i].color = _color[i];
@@ -73,8 +72,8 @@ contract Betting{
    function distributePrize() public{
        address payable player = msg.sender;
        uint256 bet = playerInfo[player].amountBet;
-       uint256 prize = 0;
        uint256 times = 0;
+       playerInfo[player].prize = 0;
 
            if(playerInfo[player].typeSelected == 1)times = singleDiceSymbolWinner(player);
            else if(playerInfo[player].typeSelected == 2)times = pairDiceSymbolWinner(player);
