@@ -134,7 +134,7 @@ export class Bet extends Component {
     const accounts = await web3.eth.getAccounts()
     console.log(accounts)
     const contract = new web3.eth.Contract(BettingContract.abi, '0x68afA40a306B8712dA0befe1184090b64416Aa37')
-    contract.methods.bet(this.state.typeSelect,this.state.array,this.state.arrayColor).send({ from: this.state.address, value: 100000000000000 })
+    await contract.methods.bet(this.state.typeSelect,this.state.array,this.state.arrayColor).send({ from: this.state.address, value: 100000000000000 })
     .then(contract.methods.getBetStatus().call({from: this.state.address})
     .then((result)=>{this.setState({isBet: result})})
     )
@@ -143,14 +143,14 @@ export class Bet extends Component {
 
   async setResult() {
     const contract = await this.getContract()
-    let temp = this.state.resultItem;
+    let temp = [];
     let setColor = []
 
     if (this.state.resultItem === undefined) {
       this.setResult()
       return;
     } else {
-
+      temp = [1,2,3];
       for (let i = 0; i < 3; i++) {
         setColor.push(this.setResultColor(temp[i]))
         console.log(setColor)
@@ -158,26 +158,35 @@ export class Bet extends Component {
       }
     }
 
-    await contract.methods.setResult(temp, setColor).send({ from: this.state.address });
+    console.log(temp[0]+""+setColor[0])
 
+    await contract.methods.setResult([0,1,3], setColor).send({ from: this.state.address });
+
+    const dice = await contract.methods.getDiceSymbol(0).call({ from: this.state.address })
+    console.log(parseInt(dice))
+  
     await contract.methods.getDiceSymbol(1).call({ from: this.state.address }).then((result) => {
       console.log("Symbol: " + result)
+    });
+    await contract.methods.getDiceSymbol(2).call({ from: this.state.address }).then((result) => {
+      console.log("Symbol: " + result)
+    });
+    await contract.methods.getDiceColor(0).call({ from: this.state.address }).then((result) => {
+      console.log("Color: " + result)
     });
     await contract.methods.getDiceColor(1).call({ from: this.state.address }).then((result) => {
       console.log("Color: " + result)
     });
+    await contract.methods.getDiceColor(2).call({ from: this.state.address }).then((result) => {
+      console.log("Color: " + result)
+    });
 
-    await contract.methods.distributePrize().call({ from: this.state.address })
-      .then(() => {
-        contract.methods.getAmountToPay().call({ from: this.state.address });
-      }).then((error,result) => {
-        if(error){console.log(error)}
-        console.log("Prize: " + result);
-        contract.methods.paybyDealer().call({ from: '0xc6a997701692EF41667A3306C0CaF8EE3C810a58', value: result });
-      }).then(() => {
-        contract.methods.cashOut().call({ from: this.state.address });
-      });
 
+    await contract.methods.distributePrize().send({ from: this.state.address })
+    let prize = await contract.methods.getAmountToPay().call({ from: this.state.address });
+    console.log("Prize: " + prize);
+    await contract.methods.paybyDealer().send({ from: '0xc6a997701692EF41667A3306C0CaF8EE3C810a58', value: prize });
+    await contract.methods.cashOut().send({ from: this.state.address });
   }
 
   async componentDidMount() {
@@ -289,9 +298,10 @@ export class Bet extends Component {
       this.setState({ reset: false });
       this.setState({ disable: !this.state.disable });
     });
-    this.setState({resultItem: []})
+    
+    this.setState({resultItem: [], isBet: false});
     const contract = await this.getContract();
-    await contract.methods.reset().call({from: this.state.address});
+    await contract.methods.reset().send({from: this.state.address});
   }
 
   async handleShow() {

@@ -7,8 +7,8 @@ contract Betting{
     uint8 constant private numberOfDice = 3;
     uint8 private numberOfFace = 6;
     
-    enum Symbol {Apple, Tomato, Brocoli, Cucumber, Carrot, Pineapple}
-    enum Color {Red, Green, Orange}
+    // enum Symbol {Apple, Tomato, Brocoli, Cucumber, Carrot, Pineapple}
+    // enum Color {Red, Green, Orange}
     
     struct Player{
         uint256 amountBet;
@@ -21,8 +21,8 @@ contract Betting{
     }
     
     struct DiceFace{
-        Symbol symbol;
-        Color color;
+        uint8 symbol;
+        uint8 color;
     }
     
     // DiceFace[numberOfDice] resultDices;
@@ -45,9 +45,7 @@ contract Betting{
     }
     
    //bet the money
-   function bet(uint8 _typeSelected, Symbol[] memory _symbols, Color[] memory _colors) public payable{
-    //   require(playerInfo[msg.sender].isBetSet == false, "You already bet.");
-      require(msg.value >= minBet && msg.value <= maxBet, "You must bet between 0.0001 and 0.01 ether.");
+   function bet(uint8 _typeSelected, uint8[] memory _symbols, uint8[] memory _colors) public payable{
       playerInfo[msg.sender].amountBet = msg.value;
       playerInfo[msg.sender].typeSelected = _typeSelected;
       playerInfo[msg.sender].isBetSet = true;
@@ -60,11 +58,14 @@ contract Betting{
    }
     
     //set result of dice No. that come from front-end 
-   function setResult(Symbol[] memory _symbol, Color[] memory _color) public{
-    //    require(playerInfo[msg.sender].isBetSet == true, "You need to bet first.");
-       for(uint256 i = 0; i < 3; i++){
-           playerInfo[msg.sender].resultDices[i].symbol = _symbol[i];
-           playerInfo[msg.sender].resultDices[i].color = _color[i];
+    //Symbol 0-5, Color 0-2
+   function setResult(uint8[] memory _symbol, uint8[] memory _color) public{
+    //   require(playerInfo[msg.sender].isBetSet == true, "You need to bet first.");
+      for(uint8 i = 0; i < _symbol.length; i++){
+           playerInfo[msg.sender].resultDices.push(DiceFace({
+               symbol: _symbol[i],
+               color: _color[i]
+           }));
        }
    }
    
@@ -108,12 +109,12 @@ contract Betting{
     }
  
     //get symbol of dice No.
-    function getDiceSymbol(uint diceNo) public view returns (Symbol){
+    function getDiceSymbol(uint diceNo) public view returns (uint8){
         return playerInfo[msg.sender].resultDices[diceNo].symbol;
     }
     
     //get color of dice No.
-    function getDiceColor(uint diceNo) public view returns (Color){
+    function getDiceColor(uint diceNo) public view returns (uint8){
         return playerInfo[msg.sender].resultDices[diceNo].color;
     }
     

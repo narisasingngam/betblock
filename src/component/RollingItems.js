@@ -33,7 +33,6 @@ export class RollingItems extends Component {
               width={177}
               height={181}
               startDelay={1000}
-              fixedIds={[3, 4, 7]}
               reset={this.props.reset}
               completionAnimation={true}
               onProgress={(isProgress, result) => {this.getItem(result)}}
