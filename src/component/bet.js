@@ -150,7 +150,7 @@ export class Bet extends Component {
       this.setResult()
       return;
     } else {
-      temp = [1,2,3];
+      temp = this.state.resultItem;
       for (let i = 0; i < 3; i++) {
         setColor.push(this.setResultColor(temp[i]))
         console.log(setColor)
@@ -158,12 +158,13 @@ export class Bet extends Component {
       }
     }
 
-    console.log(temp[0]+""+setColor[0])
+    console.log(temp+""+setColor)
 
-    await contract.methods.setResult([0,1,3], setColor).send({ from: this.state.address });
+    await contract.methods.setResult(temp, setColor).send({ from: this.state.address });
 
-    const dice = await contract.methods.getDiceSymbol(0).call({ from: this.state.address })
-    console.log(parseInt(dice))
+    await contract.methods.getDiceSymbol(0).call({ from: this.state.address }, function(error, result){
+      console.log(result[0]);
+      });
   
     await contract.methods.getDiceSymbol(1).call({ from: this.state.address }).then((result) => {
       console.log("Symbol: " + result)
@@ -183,7 +184,8 @@ export class Bet extends Component {
 
 
     await contract.methods.distributePrize().send({ from: this.state.address })
-    let prize = await contract.methods.getAmountToPay().call({ from: this.state.address });
+    let prize = await contract.methods.getAmountToPay().call({ from: this.state.address }, function(error, result){
+      console.log(result[0])});
     console.log("Prize: " + prize);
     await contract.methods.paybyDealer().send({ from: '0xc6a997701692EF41667A3306C0CaF8EE3C810a58', value: prize });
     await contract.methods.cashOut().send({ from: this.state.address });

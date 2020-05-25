@@ -109,12 +109,12 @@ contract Betting{
     }
  
     //get symbol of dice No.
-    function getDiceSymbol(uint diceNo) public view returns (uint8){
+    function getDiceSymbol(uint diceNo) public view returns (uint256 result){
         return playerInfo[msg.sender].resultDices[diceNo].symbol;
     }
     
     //get color of dice No.
-    function getDiceColor(uint diceNo) public view returns (uint8){
+    function getDiceColor(uint diceNo) public view returns (uint256 result){
         return playerInfo[msg.sender].resultDices[diceNo].color;
     }
     
